@@ -7,10 +7,10 @@
                 <!-- Filtro por Evento -->
                 <select v-model="selectedEvento" @change="applyFilters"
                     class="w-full sm:w-1/2 px-4 py-2 text-sm border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white">
-                    <option value="">Seleccionar evento</option>
+                    <option value="">Evento</option>
                     <option v-for="evento in eventos" :key="evento.id" :value="evento.id">{{ evento.titulo }}</option>
                 </select>
-                <input v-model="searchInput" @keyup.enter="applySearch" type="text" placeholder="Buscar por título..."
+                <input v-model="searchInput" @keyup.enter="applySearch" type="text" placeholder="Título"
                     class="w-full sm:w-1/2 px-4 py-2 text-sm border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
             </div>
             <router-link to="/adjunto/nuevo"
@@ -26,46 +26,51 @@
         <!-- Tabla -->
         <div class="flex flex-col">
             <!-- Cabecera -->
-            <div class="grid grid-cols-6 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6 text-center">
+            <div class="grid grid-cols-5 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-5 text-center text-xs">
+                <!--
                 <div class="p-2.5 xl:p-5 text-left sm:text-center">
                     <h5 class="text-xs font-medium uppercase xsm:text-sm">ID</h5>
                 </div>
+                -->
                 <div class="p-2.5 xl:p-5">
-                    <h5 class="text-xs font-medium uppercase xsm:text-sm">Evento</h5>
+                    <h5 class="uppercase">Evento</h5>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                    <h5 class="text-xs font-medium uppercase xsm:text-sm">Título</h5>
+                    <h5 class="uppercase">Título</h5>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                    <h5 class="text-xs font-medium uppercase xsm:text-sm">Descargar</h5>
+                    <h5 class="uppercase">Descargar</h5>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                    <h5 class="text-xs font-medium uppercase xsm:text-sm">Estado</h5>
+                    <h5 class="uppercase">Estado</h5>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                    <h5 class="text-xs font-medium uppercase xsm:text-sm">Acciones</h5>
+                    <h5 class="uppercase">Acciones</h5>
                 </div>
             </div>
 
             <!-- Filas -->
             <div v-if="filteredAdjuntos.length === 0"
-                class="flex justify-center py-6 text-sm text-gray-500 dark:text-gray-300">
+                class="flex justify-center py-6 text-xs text-gray-500 dark:text-gray-300">
                 No se encontraron adjuntos.
             </div>
 
             <div v-for="(adjunto, index) in paginatedAdjuntos" :key="adjunto.id"
-                :class="`grid grid-cols-6 sm:grid-cols-6 items-center ${index < paginatedAdjuntos.length - 1 ? 'border-b border-stroke dark:border-strokedark' : ''}`">
-                <div class="p-2.5 xl:p-5 text-left sm:text-center text-xs xsm:text-sm text-black dark:text-white">
+                :class="`grid grid-cols-5 sm:grid-cols-5 items-center text-xs ${index < paginatedAdjuntos.length - 1 ? 'border-b border-stroke dark:border-strokedark' : ''}`">
+                <!--
+                <div class="p-2.5 xl:p-5 text-left sm:text-center text-black dark:text-white">
                     {{ adjunto.id }}
                 </div>
+                -->
                 <div class="p-2.5 xl:p-5 flex items-center justify-start">
-                    <p class="text-xs xsm:text-sm text-black dark:text-white">{{ adjunto.evento.titulo }}</p>
+                    <p class="text-black dark:text-white">{{ adjunto.evento.titulo }}</p>
                 </div>
                 <div class="p-2.5 xl:p-5 flex items-center justify-start">
-                    <p class="text-xs xsm:text-sm text-black dark:text-white">{{ adjunto.titulo }}</p>
+                    <p class="text-black dark:text-white">{{ adjunto.titulo }}</p>
                 </div>
-                <div class="p-2.5 xl:p-5 flex items-center justify-start">
-                    <button @click="downloadAdjunto(adjunto)" class="text-green-500 hover:text-green-700">
+                <div class="p-2.5 xl:p-5 flex items-center justify-center">
+                    <button @click="downloadAdjunto(adjunto)"
+                        class="text-green-500 hover:text-green-700 flex items-center justify-center">
                         <DownloadIcon class="h-6 w-6 text-red-500" />
                     </button>
                 </div>
@@ -111,13 +116,13 @@
             </div>
         </div>
         <!-- Paginación -->
-        <div v-if="totalPages > 1" class="mt-6 flex justify-center gap-2 flex-wrap">
+        <div v-if="totalPages > 1" class="mt-6 flex justify-center gap-2 flex-wrap text-xs">
             <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)"
-                class="px-3 py-1 text-sm border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
+                class="px-3 py-1 border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
                 Anterior
             </button>
             <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="[
-                'px-3 py-1 text-sm border rounded transition-colors duration-200',
+                'px-3 py-1 border rounded transition-colors duration-200',
                 currentPage === page ? 'bg-blue-600 text-white border-blue-600 active' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
             ]">
                 {{ page }}
@@ -167,7 +172,7 @@ export default {
         const selectedEvento = ref('')
         const dropdownVisibleId = ref(null)
         const currentPage = ref(1)
-        const itemsPerPage = 5
+        const itemsPerPage = 10
 
         const isConfirmVisible = ref(false)
         const notificationMessage = ref('')
@@ -239,7 +244,7 @@ export default {
         }
 
         const applySearch = () => {
-            searchQuery.value = searchInput.value
+            searchQuery.value = searchInput.value.trim()
             currentPage.value = 1
         }
 

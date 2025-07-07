@@ -94,13 +94,15 @@ export default {
         loading.value = true;
         isDuplicated.value = false
 
-        await storeTipoEvento.getTipoEventoByNombre(tipoEvento.value.nombre)
+        await storeTipoEvento.getTipoEventoByNombre(tipoEvento.value.nombre.trim())
 
         if (storeTipoEvento.tipoEvento) {
           storeToast.addToast('Tipo de evento ya existe', 'warning')
           isDuplicated.value = false
           return
         }
+
+        tipoEvento.value.nombre = tipoEvento.value.nombre.trim()
 
         if (tipoEvento.value.id) {
           await storeTipoEvento.updateTipoEvento(tipoEvento.value.id, tipoEvento.value);

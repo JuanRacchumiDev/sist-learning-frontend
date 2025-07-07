@@ -88,13 +88,15 @@ export default {
         loading.value = true;
         isDuplicated.value = false
 
-        await storeCargo.getCargoByNombre(cargo.value.nombre)
+        await storeCargo.getCargoByNombre(cargo.value.nombre.trim())
 
         if (storeCargo.cargo) {
           storeToast.addToast('Cargo ya existe', 'warning')
           isDuplicated.value = false
           return
         }
+
+        cargo.value.nombre = cargo.value.nombre.trim()
 
         if (cargo.value.id) {
           await storeCargo.updateCargo(cargo.value.id, cargo.value);

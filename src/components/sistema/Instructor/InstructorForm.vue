@@ -68,7 +68,7 @@
         <div class="mb-1">
           <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono: <span
               class="text-red-500">*</span></label>
-          <input v-model="instructor.telefono" type="text" id="telefono" autocomplete="off" maxlength="15"
+          <input v-model="instructor.telefono" type="text" id="telefono" autocomplete="off" maxlength="10"
             placeholder="Ejm: 995511224"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.telefono" class="text-red-600 text-sm mt-1">{{ errors.telefono }}</div>
@@ -127,7 +127,13 @@
 <script>
 import { onMounted, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useInstructorStore, useTipoDocumentoStore, usePersonaStore, usePaisStore, useToastStore } from '@/stores'
+import {
+  useInstructorStore,
+  useTipoDocumentoStore,
+  usePersonaStore,
+  usePaisStore,
+  useToastStore
+} from '@/stores'
 
 export default {
   setup() {
@@ -220,6 +226,12 @@ export default {
       isDuplicated.value = false
 
       try {
+        instructor.value.apellido_paterno = instructor.value.apellido_paterno.trim()
+        instructor.value.apellido_materno = instructor.value.apellido_materno.trim()
+        instructor.value.nombres = instructor.value.nombres.trim()
+        instructor.value.telefono = instructor.value.telefono.trim()
+        instructor.value.email = instructor.value.email.trim()
+
         if (instructor.value.id) {
           await storeInstructor.updateInstructor(instructor.value.id, instructor.value)
           const classToast = (storeInstructor.result) ? 'success' : 'error'
@@ -283,9 +295,9 @@ export default {
       isDuplicated.value = false
 
       try {
-        if (instructor.value.id_tipodocumento && instructor.value.numero_documento) {
+        if (instructor.value.id_tipodocumento && instructor.value.numero_documento.trim()) {
           const idTipoDoc = instructor.value.id_tipodocumento
-          const numDoc = instructor.value.numero_documento
+          const numDoc = instructor.value.numero_documento.trim()
 
           await storePersona.getPersonaByTipoDocNumDoc(idTipoDoc, numDoc)
           await storeInstructor.getInstructorByTipoDocNumDoc(idTipoDoc, numDoc)
@@ -302,12 +314,12 @@ export default {
               fechaNacimiento = `${partsFecha[0]}-${partsFecha[1]}-${partsFecha[2]}`;
             }
 
-            instructor.value.nombres = getInstructor.nombres || '';
-            instructor.value.apellido_paterno = getInstructor.apellido_paterno || '';
-            instructor.value.apellido_materno = getInstructor.apellido_materno || '';
+            instructor.value.nombres = getInstructor.nombres.trim() || '';
+            instructor.value.apellido_paterno = getInstructor.apellido_paterno.trim() || '';
+            instructor.value.apellido_materno = getInstructor.apellido_materno.trim() || '';
             instructor.value.fecha_nacimiento = fechaNacimiento;
             instructor.value.sexo = getInstructor.sexo || '';
-            instructor.value.telefono = getInstructor.telefono
+            instructor.value.telefono = getInstructor.telefono.trim() || ''
 
             storeToast.addToast(storeInstructor.message, 'warning')
             isDuplicated.value = true
@@ -322,9 +334,9 @@ export default {
               fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`;
             }
 
-            instructor.value.nombres = getPersona.nombres || '';
-            instructor.value.apellido_paterno = getPersona.apellido_paterno || '';
-            instructor.value.apellido_materno = getPersona.apellido_materno || '';
+            instructor.value.nombres = getPersona.nombres.trim() || '';
+            instructor.value.apellido_paterno = getPersona.apellido_paterno.trim() || '';
+            instructor.value.apellido_materno = getPersona.apellido_materno.trim() || '';
             instructor.value.fecha_nacimiento = fechaNacimiento;
             instructor.value.sexo = getPersona.sexo || '';
 
@@ -340,12 +352,12 @@ export default {
               fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`;
             }
 
-            instructor.value.nombres = getInstructor.nombres || '';
-            instructor.value.apellido_paterno = getInstructor.apellido_paterno || '';
-            instructor.value.apellido_materno = getInstructor.apellido_materno || '';
+            instructor.value.nombres = getInstructor.nombres.trim() || '';
+            instructor.value.apellido_paterno = getInstructor.apellido_paterno.trim() || '';
+            instructor.value.apellido_materno = getInstructor.apellido_materno.trim() || '';
             instructor.value.fecha_nacimiento = fechaNacimiento;
             instructor.value.sexo = getInstructor.sexo || '';
-            instructor.value.telefono = getInstructor.telefono
+            instructor.value.telefono = getInstructor.telefono.trim || '';
 
             storeToast.addToast(storeInstructor.message, 'warning')
             isDuplicated.value = true
@@ -365,9 +377,9 @@ export default {
                 fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`;
               }
 
-              instructor.value.nombres = persona.nombres || '';
-              instructor.value.apellido_paterno = persona.apellido_paterno || '';
-              instructor.value.apellido_materno = persona.apellido_materno || '';
+              instructor.value.nombres = persona.nombres.trim() || '';
+              instructor.value.apellido_paterno = persona.apellido_paterno.trim() || '';
+              instructor.value.apellido_materno = persona.apellido_materno.trim() || '';
               instructor.value.fecha_nacimiento = fechaNacimiento;
               instructor.value.sexo = persona.sexo || '';
 
@@ -431,7 +443,7 @@ export default {
     };
 
     onMounted(async () => {
-      storeTipoDocumento.fetchTipos()
+      storeTipoDocumento.fetchTiposPorCategoria('persona')
       storePais.fetchPaises()
 
       const instructorId = route.params.id

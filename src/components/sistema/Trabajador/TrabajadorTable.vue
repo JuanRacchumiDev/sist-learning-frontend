@@ -3,7 +3,7 @@
     class="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-6">
     <!-- Encabezado con búsqueda y botón -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-      <input v-model="searchInput" @keyup.enter="applySearch" type="text" placeholder="Buscar por número de documento"
+      <input v-model="searchInput" @keyup.enter="applySearch" type="text" placeholder="Número de documento"
         class="w-full sm:w-1/3 px-4 py-2 text-sm border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
       <router-link to="/trabajador/nuevo"
         class="inline-flex items-center gap-2 self-end md:self-auto rounded bg-greenwhite-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-greenwhite-700">
@@ -18,67 +18,73 @@
     <!-- Tabla -->
     <div class="flex flex-col">
       <!-- Cabecera -->
-      <div class="grid grid-cols-8 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-8 text-center">
+      <div class="grid grid-cols-7 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-7 text-center text-xs">
+        <!--
         <div class="p-2.5 xl:p-5 text-left sm:text-center">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">ID</h5>
+          <h5 class="uppercase">ID</h5>
+        </div>
+        -->
+        <div class="p-2.5 xl:p-5">
+          <h5 class="uppercase">Tipo documento</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Tipo de documento</h5>
+          <h5 class="uppercase">Cargo</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Cargo</h5>
+          <h5 class="uppercase">Número documento</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Número de documento</h5>
+          <h5 class="uppercase">Apellidos</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Apellidos</h5>
+          <h5 class="uppercase">Nombres</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Nombres</h5>
+          <h5 class="uppercase">Estado</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Estado</h5>
-        </div>
-        <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Acciones</h5>
+          <h5 class="uppercase">Acciones</h5>
         </div>
       </div>
 
       <!-- Filas -->
       <div v-if="filteredTrabajadores.length === 0"
-        class="flex justify-center py-6 text-sm text-gray-500 dark:text-gray-300">
-        No se encontraron trabajadores|.
+        class="flex justify-center py-6 text-xs text-gray-500 dark:text-gray-300">
+        No se encontraron trabajadores.
       </div>
 
       <div v-for="(trabajador, index) in paginatedTrabajadores" :key="trabajador.id"
-        :class="`grid grid-cols-7 sm:grid-cols-7 items-center ${index < paginatedTrabajadores.length - 1 ? 'border-b border-stroke dark:border-strokedark' : ''}`">
-        <div class="p-2.5 xl:p-5 text-left sm:text-center text-xs xsm:text-sm text-black dark:text-white">
+        :class="`grid grid-cols-7 sm:grid-cols-7 items-center text-xs ${index < paginatedTrabajadores.length - 1 ? 'border-b border-stroke dark:border-strokedark' : ''}`">
+        <!--
+        <div class="p-2.5 xl:p-5 text-left sm:text-center text-black dark:text-white">
           {{ trabajador.id }}
         </div>
+        -->
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p class="text-xs xsm:text-sm text-black dark:text-white">
+          <p class="text-black dark:text-white">
+            {{ trabajador.TipoDocumento ? trabajador.TipoDocumento.abreviatura : '--' }}
+          </p>
+        </div>
+        <div class="p-2.5 xl:p-5 flex items-center justify-start">
+          <p class="text-black dark:text-white">
             {{
-              trabajador.Cargo ? trabajador.Cargo.nombre : 'Sin cargo'
+              trabajador.Cargo ? trabajador.Cargo.nombre : '--'
             }}
           </p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p class="text-xs xsm:text-sm text-black dark:text-white">
+          <p class="text-black dark:text-white">
             {{
-              trabajador.TipoDocumento ? trabajador.TipoDocumento.abreviatura : 'Sin tipo documento'
+              trabajador.numero_documento
             }}
           </p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p class="text-xs xsm:text-sm text-black dark:text-white">{{ trabajador.numero_documento }}</p>
-        </div>
-        <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p class="text-xs xsm:text-sm text-black dark:text-white">{{ trabajador.apellido_paterno }} {{
+          <p class="text-black dark:text-white">{{ trabajador.apellido_paterno }} {{
             trabajador.apellido_materno }}</p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p class="text-xs xsm:text-sm text-black dark:text-white">{{ trabajador.nombres }}</p>
+          <p class="text-black dark:text-white">{{ trabajador.nombres }}</p>
         </div>
         <div class="items-center justify-center p-2.5 sm:flex xl:p-5">
           <button @click="requestToggleEstado(trabajador.id)"
@@ -108,11 +114,11 @@
             <div v-if="dropdownVisibleId === trabajador.id"
               class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600">
               <router-link :to="{ name: 'editTrabajador', params: { id: trabajador.id } }"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
+                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
                 Editar
               </router-link>
               <button @click="() => { requestDeleteTrabajador(trabajador.id); dropdownVisibleId = null }"
-                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
+                class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
                 Eliminar
               </button>
             </div>
@@ -121,9 +127,9 @@
       </div>
     </div>
     <!-- Paginación -->
-    <div v-if="totalPages > 1" class="mt-6 flex justify-center gap-2 flex-wrap">
+    <div v-if="totalPages > 1" class="mt-6 flex justify-center gap-2 flex-wrap text-xs">
       <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)"
-        class="px-3 py-1 text-sm border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
+        class="px-3 py-1 border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
         Anterior
       </button>
       <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="[
@@ -133,7 +139,7 @@
         {{ page }}
       </button>
       <button :disabled="currentPage === totalPages" @click="changePage(currentPage + 1)"
-        class="px-3 py-1 text-sm border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
+        class="px-3 py-1 border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
         Siguiente
       </button>
     </div>
@@ -168,7 +174,7 @@ export default {
     const searchQuery = ref('')
     const currentPage = ref(1)
     const dropdownVisibleId = ref(null)
-    const itemsPerPage = 5
+    const itemsPerPage = 10
 
     const isConfirmVisible = ref(false)
     const notificationMessage = ref('')
@@ -179,7 +185,7 @@ export default {
 
     const filteredTrabajadores = computed(() =>
       trabajadores.value.filter(trabajador =>
-        trabajador.numero_documento.toLowerCase().includes(searchQuery.value.toLowerCase())
+        trabajador.numero_documento.toLowerCase().includes(searchQuery.value.toLowerCase().trim())
       )
     )
 
@@ -239,7 +245,7 @@ export default {
     }
 
     const applySearch = () => {
-      searchQuery.value = searchInput.value
+      searchQuery.value = searchInput.value.trim()
       currentPage.value = 1
     }
 

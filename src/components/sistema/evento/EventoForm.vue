@@ -131,7 +131,13 @@
 <script>
 import { onMounted, ref, computed } from 'vue';
 import { useRoute } from "vue-router"
-import { useEventoStore, useTipoEventoStore, usePlantillaStore, useToastStore, useInstructorStore } from '@/stores';
+import {
+  useEventoStore,
+  useTipoEventoStore,
+  usePlantillaStore,
+  useToastStore,
+  useInstructorStore
+} from '@/stores';
 
 export default {
   setup() {
@@ -218,13 +224,17 @@ export default {
 
       try {
 
-        await storeEvento.getEventoByTitulo(evento.value.titulo)
+        await storeEvento.getEventoByTitulo(evento.value.titulo.trim())
 
         if (storeEvento.evento) {
           storeToast.addToast('El evento ya existe', 'warning')
           isDuplicated.value = false
           return
         }
+
+        evento.value.titulo = evento.value.titulo.trim()
+        evento.value.duracion = evento.value.duracion.trim()
+        evento.value.temario = evento.value.temario.trim()
 
         if (evento.value.id) {
           await storeEvento.updateEvento(evento.value.id, evento.value)

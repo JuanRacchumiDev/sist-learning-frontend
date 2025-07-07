@@ -184,7 +184,7 @@ export default {
                 return
             }
 
-            const termino = search.value.toLowerCase()
+            const termino = search.value.toLowerCase().trim()
             personasFiltradas.value = personas.value.filter(
                 p => `${p.nombres} ${p.apellido_paterno} ${p.apellido_materno}`.toLowerCase().includes(termino)
             )
@@ -202,7 +202,7 @@ export default {
                 usuario.value.id_trabajador = persona.id
             }
 
-            usuario.value.username = persona.numero_documento
+            usuario.value.username = persona.numero_documento.trim()
             usuario.value.password = PASSWORD_DEFAULT
         }
 
@@ -225,7 +225,7 @@ export default {
                 errors.value.id_persona = 'Seleccione una persona'
             }
 
-            if (!usuario.value.password) {
+            if (!usuario.value.password || usuario.value.password.trim() === '') {
                 errors.value.password = 'La contraseña es obligatoria'
             }
 
@@ -252,6 +252,9 @@ export default {
             isDuplicated.value = false
 
             try {
+                usuario.value.username = usuario.value.username.trim()
+                usuario.value.password = usuario.value.password.trim()
+
                 if (usuario.value.id) {
                     await storeUsuario.updateUsuario(usuario.value.id, usuario.value)
                     const classToast = (storeUsuario.result) ? 'success' : 'error'

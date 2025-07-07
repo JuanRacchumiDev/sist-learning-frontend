@@ -7,7 +7,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Buscar alumno: <span
                 class="text-red-500">*</span></label>
-            <input type="text" v-model="searchQuery" @input="filterAlumnos" placeholder="Ej. Juan Pérez"
+            <input type="text" v-model="searchQuery" @keyup.enter="filterAlumnos" placeholder="Ej. Juan Pérez"
               class="mt-1 p-2 border border-gray-300 rounded w-full" />
             <div v-if="filteredAlumnos.length > 0"
               class="mt-2 bg-white border border-gray-300 rounded max-h-60 overflow-y-auto">
@@ -51,8 +51,22 @@
                 class="text-red-500">*</span></label>
             <input v-model="certificado.fecha_envio" type="date"
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
+            <div v-if="errors.fecha_envio" class="text-red-600 text-sm mt-1">{{ errors.fecha_envio }}</div>
           </div>
-          <div v-if="errors.fecha_envio" class="text-red-600 text-sm mt-1">{{ errors.fecha_envio }}</div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Firmado PERUAGRO:</label>
+            <div class="flex items-center space-x-4">
+              <label class="inline-flex items-center">
+                <input type="radio" v-model="certificado.firmado" value=true class="form-radio text-green-600">
+                <span class="ml-2">Firmado</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="radio" v-model="certificado.firmado" value=false class="form-radio text-red-600">
+                <span class="ml-2">No Firmado</span>
+              </label>
+            </div>
+            <div v-if="errors.firmado" class="text-red-600 text-sm mt-1">{{ errors.firmado }}</div>
+          </div>
         </div>
       </div>
 
@@ -85,7 +99,12 @@
 <script>
 import { onMounted, ref, computed } from 'vue';
 import { useRoute } from "vue-router"
-import { useAlumnoStore, useEventoStore, useCertificadoStore, useToastStore } from "@/stores"
+import {
+  useAlumnoStore,
+  useEventoStore,
+  useCertificadoStore,
+  useToastStore
+} from "@/stores"
 import { currentDate } from "@/utils/date.utils";
 
 export default {
@@ -95,9 +114,10 @@ export default {
       id_alumno: '',
       nombre_alumno_impresion: '',
       id_evento: '',
-      fecha_envio: currentDate()
-
+      fecha_envio: currentDate(),
+      firmado: "FIRMADO"
     });
+
     const storeCertificado = useCertificadoStore();
     const storeAlumno = useAlumnoStore();
     const storeEvento = useEventoStore();
@@ -121,7 +141,7 @@ export default {
       return alumnos.value.filter((alumno) => {
         return `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`
           .toLowerCase()
-          .includes(searchQuery.value.toLowerCase());
+          .includes(searchQuery.value.toLowerCase().trim());
       });
     });
 
@@ -144,6 +164,10 @@ export default {
         errors.value.fecha_envio = 'Seleccione una fecha'
       }
 
+      if (!certificado.value.firmado || certificado.value.firmado.trim() === '') {
+        errors.value.firmado = 'Seleccione una opción de firma'
+      }
+
       return Object.keys(errors.value).length === 0
     }
 
@@ -158,14 +182,14 @@ export default {
         filteredAlumnos.value = alumnos.value.filter((alumno) => {
           `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`
             .toLowerCase()
-            .includes(searchQuery.value.toLowerCase());
+            .includes(searchQuery.value.toLowerCase().trim());
         });
       }
     };
 
     const selectAlumno = (alumno) => {
       certificado.value.id_alumno = alumno.id;
-      certificado.value.nombre_alumno_impresion = `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`;
+      certificado.value.nombre_alumno_impresion = `${alumno.nombres.trim()} ${alumno.apellido_paterno.trim()} ${alumno.apellido_materno.trim()}`;
       searchQuery.value = ''; // Limpiar la búsqueda
     };
 
@@ -196,6 +220,11 @@ export default {
         templateError.value = false;
         loading.value = true; // Activar el spinner
 
+        certificado.value.nombre_alumno_impresion = certificado.value.nombre_alumno_impresion.trim()
+        certificado.value.firmado = (certificado.value.firmado === 'FIRMADO') ? true : false
+        console.log('certificado.value', certificado.value)
+        console.log('certificado.value.firmado', certificado.value.firmado)
+
         if (certificado.value.id) {
           await storeCertificado.updateCertificado(
             certificado.value.id,
@@ -203,6 +232,7 @@ export default {
           );
 
           const classToast = (storeCertificado.result) ? 'success' : 'error'
+
           storeToast.addToast(storeCertificado.message, classToast)
         } else {
           await storeAlumno.getAlumnoById(
@@ -233,7 +263,7 @@ export default {
         nombre_alumno_impresion: '',
         id_evento: '',
         fecha_envio: currentDate(),
-        template: 'template_uno',
+        firmado: true
       };
 
       isNombreAlumnoDisabled.value = true;
@@ -246,7 +276,7 @@ export default {
         nombre_alumno_impresion: '',
         id_evento: '',
         fecha_envio: currentDate(),
-        template: 'template_uno',
+        firmado: true
       };
 
       isNombreAlumnoDisabled.value = true;

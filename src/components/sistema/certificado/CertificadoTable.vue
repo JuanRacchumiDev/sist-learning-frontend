@@ -3,8 +3,7 @@
     class="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-6">
     <!-- Encabezado con búsqueda y botón -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-      <input v-model="searchInput" @keyup.enter="applySearch" type="text" placeholder="Buscar por nombre..."
-        :disabled="isEstudiante"
+      <input v-model="searchInput" @keyup.enter="applySearch" type="text" placeholder="Nombre" :disabled="isEstudiante"
         class="w-full sm:w-1/3 px-4 py-2 text-sm border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
       <router-link v-if="!isEstudiante" to="/certificado/nuevo"
         class="inline-flex items-center gap-2 self-end md:self-auto rounded bg-greenwhite-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-greenwhite-700">
@@ -19,24 +18,26 @@
     <!-- Tabla -->
     <div class="flex flex-col">
       <!-- Cabecera -->
-      <div class="grid grid-cols-7 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-7 text-center">
+      <div class="grid grid-cols-6 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6 text-center text-xs">
+        <!--
         <div class="p-2.5 xl:p-5 text-left sm:text-center">
           <h5 class="text-xs font-medium uppercase xsm:text-sm">ID</h5>
         </div>
+        -->
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Alumno</h5>
+          <h5 class="uppercase">Alumno</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Evento</h5>
+          <h5 class="uppercase">Evento</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Fecha Emisión</h5>
+          <h5 class="uppercase">Fecha Emisión</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Descargar</h5>
+          <h5 class="uppercase">Descargar</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Estado</h5>
+          <h5 class="uppercase">Estado</h5>
         </div>
         <div class="p-2.5 xl:p-5">
           <h5 class="text-xs font-medium uppercase xsm:text-sm">Acciones</h5>
@@ -45,34 +46,37 @@
 
       <!-- Filas -->
       <div v-if="filteredCertificados.length === 0"
-        class="flex justify-center py-6 text-sm text-gray-500 dark:text-gray-300">
+        class="flex justify-center py-6 text-xs text-gray-500 dark:text-gray-300">
         No se encontraron certificados.
       </div>
 
       <div v-for="(certificado, index) in paginatedCertificados" :key="certificado.id"
-        :class="`grid grid-cols-7 sm:grid-cols-7 items-center ${index < paginatedCertificados.length - 1 ? 'border-b border-stroke dark:border-strokedark' : ''}`">
+        :class="`grid grid-cols-6 sm:grid-cols-6 items-center text-xs ${index < paginatedCertificados.length - 1 ? 'border-b border-stroke dark:border-strokedark' : ''}`">
+        <!--
         <div class="p-2.5 xl:p-5 text-left sm:text-center text-xs xsm:text-sm text-black dark:text-white">
           {{ certificado.id }}
         </div>
+        -->
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p class="text-xs xsm:text-sm text-black dark:text-white">
+          <p class="text-black dark:text-white">
             {{ certificado?.Alumno ? certificado?.Alumno.apellido_paterno : '' }}
             {{ certificado?.Alumno ? certificado?.Alumno.apellido_materno : '' }}
             {{ certificado?.Alumno ? certificado?.Alumno.nombres : '' }}
           </p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p class="text-xs xsm:text-sm text-black dark:text-white">
+          <p class="text-black dark:text-white">
             {{ certificado.Evento ? certificado.Evento.titulo : '--' }}
           </p>
         </div>
-        <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p v-if="certificado.fecha_envio" class="text-xs xsm:text-sm text-black dark:text-white">
+        <div class="p-2.5 xl:p-5 flex items-center justify-center">
+          <p v-if="certificado.fecha_envio" class="text-black dark:text-white text-center w-full">
             {{ formatDate(certificado.fecha_envio) }}</p>
-          <p v-else class="text-xs xsm:text-sm text-black dark:text-white">--</p>
+          <p v-else class="text-black dark:text-white">--</p>
         </div>
-        <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <button @click="downloadCertificado(certificado)" class="text-green-500 hover:text-green-700">
+        <div class="p-2.5 xl:p-5 flex items-center justify-center">
+          <button @click="downloadCertificado(certificado)"
+            class="text-green-500 hover:text-green-700 w-full flex items-center justify-center">
             <DownloadIcon class="h-6 w-6 text-red-500" />
           </button>
         </div>
@@ -104,11 +108,11 @@
             <div v-if="dropdownVisibleId === certificado.id && !isEstudiante"
               class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600">
               <router-link :to="{ name: 'editCertificado', params: { id: certificado.id } }"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
+                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
                 Editar
               </router-link>
               <button @click="() => { requestDeleteCertificado(certificado.id); dropdownVisibleId = null }"
-                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
+                class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
                 Eliminar
               </button>
             </div>
@@ -117,7 +121,7 @@
       </div>
     </div>
     <!-- Paginación -->
-    <div v-if="totalPages > 1" class="mt-6 flex justify-center gap-2 flex-wrap">
+    <div v-if="totalPages > 1" class="mt-6 flex justify-center gap-2 flex-wrap text-xs">
       <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)"
         class="px-3 py-1 text-sm border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
         Anterior
@@ -167,7 +171,7 @@ export default {
     const searchQuery = ref('')
     const currentPage = ref(1)
     const dropdownVisibleId = ref(null)
-    const itemsPerPage = 5
+    const itemsPerPage = 10
 
     const isConfirmVisible = ref(false)
     const certificadoToDelete = ref(null)
@@ -251,7 +255,7 @@ export default {
     }
 
     const applySearch = () => {
-      searchQuery.value = searchInput.value
+      searchQuery.value = searchInput.value.trim()
       currentPage.value = 1
     }
 

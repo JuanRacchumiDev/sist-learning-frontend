@@ -3,7 +3,7 @@
     class="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-6">
     <!-- Encabezado con búsqueda y botón -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-      <input v-model="searchInput" @keyup.enter="applySearch" type="text" placeholder="Buscar por nombre..."
+      <input v-model="searchInput" @keyup.enter="applySearch" type="text" placeholder="Nombre"
         class="w-full sm:w-1/3 px-4 py-2 text-sm border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
       <router-link to="/cargo/nuevo"
         class="inline-flex items-center gap-2 self-end md:self-auto rounded bg-greenwhite-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-greenwhite-700">
@@ -18,33 +18,37 @@
     <!-- Tabla -->
     <div class="flex flex-col">
       <!-- Cabecera -->
-      <div class="grid grid-cols-4 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-4 text-center">
+      <div class="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-3 text-center text-xs">
+        <!--
         <div class="p-2.5 xl:p-5 text-left sm:text-center">
           <h5 class="text-xs font-medium uppercase xsm:text-sm">ID</h5>
         </div>
+        -->
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Nombre</h5>
+          <h5 class="uppercase">Nombre</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Estado</h5>
+          <h5 class="uppercase">Estado</h5>
         </div>
         <div class="p-2.5 xl:p-5">
-          <h5 class="text-xs font-medium uppercase xsm:text-sm">Acciones</h5>
+          <h5 class="uppercase">Acciones</h5>
         </div>
       </div>
 
       <!-- Filas -->
-      <div v-if="filteredCargos.length === 0" class="flex justify-center py-6 text-sm text-gray-500 dark:text-gray-300">
+      <div v-if="filteredCargos.length === 0" class="flex justify-center py-6 text-gray-500 dark:text-gray-300">
         No se encontraron cargos.
       </div>
 
       <div v-for="(cargo, index) in paginatedCargos" :key="cargo.id"
-        :class="`grid grid-cols-4 sm:grid-cols-4 items-center ${index < paginatedCargos.length - 1 ? 'border-b border-stroke dark:border-strokedark' : ''}`">
+        :class="`grid grid-cols-3 sm:grid-cols-3 items-center text-xs ${index < paginatedCargos.length - 1 ? 'border-b border-stroke dark:border-strokedark' : ''}`">
+        <!--
         <div class="p-2.5 xl:p-5 text-left sm:text-center text-xs xsm:text-sm text-black dark:text-white">
           {{ cargo.id }}
         </div>
-        <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p class="text-xs xsm:text-sm text-black dark:text-white">{{ cargo.nombre }}</p>
+        -->
+        <div class="p-2.5 xl:p-5 flex items-center justify-center">
+          <p class="text-black dark:text-white text-center w-full">{{ cargo.nombre }}</p>
         </div>
         <div class="items-center justify-center p-2.5 sm:flex xl:p-5">
           <button @click="requestToggleEstado(cargo.id)"
@@ -74,11 +78,11 @@
             <div v-if="dropdownVisibleId === cargo.id"
               class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600">
               <router-link :to="{ name: 'editCargo', params: { id: cargo.id } }"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
+                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
                 Editar
               </router-link>
               <button @click="() => { requestDeleteCargo(cargo.id); dropdownVisibleId = null }"
-                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
+                class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
                 Eliminar
               </button>
             </div>
@@ -87,19 +91,19 @@
       </div>
     </div>
     <!-- Paginación -->
-    <div v-if="totalPages > 1" class="mt-6 flex justify-center gap-2 flex-wrap">
+    <div v-if="totalPages > 1" class="mt-6 flex justify-center gap-2 flex-wrap text-xs">
       <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)"
-        class="px-3 py-1 text-sm border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
+        class="px-3 py-1 border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
         Anterior
       </button>
       <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="[
-        'px-3 py-1 text-sm border rounded transition-colors duration-200',
+        'px-3 py-1 border rounded transition-colors duration-200',
         currentPage === page ? 'bg-blue-600 text-white border-blue-600 active' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
       ]">
         {{ page }}
       </button>
       <button :disabled="currentPage === totalPages" @click="changePage(currentPage + 1)"
-        class="px-3 py-1 text-sm border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
+        class="px-3 py-1 border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
         Siguiente
       </button>
     </div>
@@ -134,7 +138,7 @@ export default {
     const searchQuery = ref('')
     const currentPage = ref(1)
     const dropdownVisibleId = ref(null)
-    const itemsPerPage = 5
+    const itemsPerPage = 10
 
     const isConfirmVisible = ref(false)
     const cargoToDelete = ref(null)
@@ -206,7 +210,7 @@ export default {
     }
 
     const applySearch = () => {
-      searchQuery.value = searchInput.value
+      searchQuery.value = searchInput.value.trim()
       currentPage.value = 1
     }
 

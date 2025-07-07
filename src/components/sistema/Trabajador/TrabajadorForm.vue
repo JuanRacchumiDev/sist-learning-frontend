@@ -68,7 +68,7 @@
         <div class="mb-1">
           <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono: <span
               class="text-red-500">*</span></label>
-          <input v-model="trabajador.telefono" type="text" id="telefono" autocomplete="off" maxlength="30"
+          <input v-model="trabajador.telefono" type="text" id="telefono" autocomplete="off" maxlength="10"
             placeholder="Ejm: 995511224"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.telefono" class="text-red-600 text-sm mt-1">{{ errors.telefono }}</div>
@@ -240,6 +240,14 @@ export default {
       isDuplicated.value = false
 
       try {
+        trabajador.value.numero_documento = trabajador.value.numero_documento.trim()
+        trabajador.value.apellido_paterno = trabajador.value.apellido_paterno.trim()
+        trabajador.value.apellido_materno = trabajador.value.apellido_materno.trim()
+        trabajador.value.nombres = trabajador.value.nombres.trim()
+        trabajador.value.telefono = trabajador.value.telefono.trim()
+        trabajador.value.direccion = trabajador.value.direccion.trim()
+        trabajador.value.email = trabajador.value.email.trim()
+
         if (trabajador.value.id) {
           await storeTrabajador.updateTrabajador(trabajador.value.id, trabajador.value)
           const classToast = (storeTrabajador.result) ? 'success' : 'error'
@@ -303,9 +311,9 @@ export default {
       isDuplicated.value = false
 
       try {
-        if (trabajador.value.id_tipodocumento && trabajador.value.numero_documento) {
+        if (trabajador.value.id_tipodocumento && trabajador.value.numero_documento.trim()) {
           const idTipoDoc = trabajador.value.id_tipodocumento
-          const numDoc = trabajador.value.numero_documento
+          const numDoc = trabajador.value.numero_documento.trim()
 
           await storePersona.getPersonaByTipoDocNumDoc(idTipoDoc, numDoc)
           await storeTrabajador.getTrabajadorByTipoDocNumDoc(idTipoDoc, numDoc)
@@ -322,12 +330,12 @@ export default {
               fechaNacimiento = `${partsFecha[0]}-${partsFecha[1]}-${partsFecha[2]}`;
             }
 
-            trabajador.value.nombres = getTrabajador.nombres || '';
-            trabajador.value.apellido_paterno = getTrabajador.apellido_paterno || '';
-            trabajador.value.apellido_materno = getTrabajador.apellido_materno || '';
+            trabajador.value.nombres = getTrabajador.nombres.trim() || '';
+            trabajador.value.apellido_paterno = getTrabajador.apellido_paterno.trim() || '';
+            trabajador.value.apellido_materno = getTrabajador.apellido_materno.trim() || '';
             trabajador.value.fecha_nacimiento = fechaNacimiento;
             trabajador.value.sexo = getTrabajador.sexo || '';
-            trabajador.value.telefono = getTrabajador.telefono
+            trabajador.value.telefono = getTrabajador.telefono.trim() || '';
 
             storeToast.addToast(storeTrabajador.message, 'warning')
             isDuplicated.value = true
@@ -342,9 +350,9 @@ export default {
               fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`;
             }
 
-            trabajador.value.nombres = getPersona.nombres || '';
-            trabajador.value.apellido_paterno = getPersona.apellido_paterno || '';
-            trabajador.value.apellido_materno = getPersona.apellido_materno || '';
+            trabajador.value.nombres = getPersona.nombres.trim() || '';
+            trabajador.value.apellido_paterno = getPersona.apellido_paterno.trim() || '';
+            trabajador.value.apellido_materno = getPersona.apellido_materno.trim() || '';
             trabajador.value.fecha_nacimiento = fechaNacimiento;
             trabajador.value.sexo = getPersona.sexo || '';
 
@@ -360,12 +368,12 @@ export default {
               fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`;
             }
 
-            trabajador.value.nombres = getTrabajador.nombres || '';
-            trabajador.value.apellido_paterno = getTrabajador.apellido_paterno || '';
-            trabajador.value.apellido_materno = getTrabajador.apellido_materno || '';
+            trabajador.value.nombres = getTrabajador.nombres.trim() || '';
+            trabajador.value.apellido_paterno = getTrabajador.apellido_paterno.trim() || '';
+            trabajador.value.apellido_materno = getTrabajador.apellido_materno.trim() || '';
             trabajador.value.fecha_nacimiento = fechaNacimiento;
             trabajador.value.sexo = getTrabajador.sexo || '';
-            trabajador.value.telefono = getTrabajador.telefono
+            trabajador.value.telefono = getTrabajador.telefono.trim() || '';
 
             storeToast.addToast(storeTrabajador.message, 'warning')
             isDuplicated.value = true
@@ -385,9 +393,9 @@ export default {
                 fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`;
               }
 
-              trabajador.value.nombres = persona.nombres || '';
-              trabajador.value.apellido_paterno = persona.apellido_paterno || '';
-              trabajador.value.apellido_materno = persona.apellido_materno || '';
+              trabajador.value.nombres = persona.nombres.trim() || '';
+              trabajador.value.apellido_paterno = persona.apellido_paterno.trim() || '';
+              trabajador.value.apellido_materno = persona.apellido_materno.trim() || '';
               trabajador.value.fecha_nacimiento = fechaNacimiento;
               trabajador.value.sexo = persona.sexo || '';
 
@@ -452,7 +460,7 @@ export default {
     };
 
     onMounted(async () => {
-      storeTipoDocumento.fetchTipos()
+      storeTipoDocumento.fetchTiposPorCategoria('persona')
       storeCargo.fetchCargos()
 
       const trabajadorId = route.params.id

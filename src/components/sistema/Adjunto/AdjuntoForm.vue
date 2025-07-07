@@ -113,7 +113,7 @@ export default {
                 errors.value.id_evento = 'Seleccione un evento'
             }
 
-            if (!adjunto.value.titulo) {
+            if (!adjunto.value.titulo.trim()) {
                 errors.value.titulo = 'El título es obligatorio'
             }
 
@@ -184,8 +184,10 @@ export default {
             try {
                 adjunto.value.file = file.value
                 formData.append('id_evento', adjunto.value.id_evento)
-                formData.append('titulo', adjunto.value.titulo)
+                formData.append('titulo', adjunto.value.titulo.trim())
                 formData.append('file', file.value)
+
+                adjunto.value.titulo = adjunto.value.titulo.trim()
 
                 if (adjunto.value.id) {
                     await storeAdjunto.updateAdjunto(adjunto.value.id, adjunto.value)

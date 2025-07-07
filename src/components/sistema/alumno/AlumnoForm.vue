@@ -68,7 +68,7 @@
         <div class="mb-1">
           <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono: <span
               class="text-red-500">*</span></label>
-          <input v-model="alumno.telefono" type="text" id="telefono" autocomplete="off" maxlength="15"
+          <input v-model="alumno.telefono" type="text" id="telefono" autocomplete="off" maxlength="10"
             placeholder="Ejm: 995511224"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.telefono" class="text-red-600 text-sm mt-1">{{ errors.telefono }}</div>
@@ -231,6 +231,7 @@ export default {
 
       try {
         const { value } = alumno
+
         const {
           id,
           id_tipodocumento,
@@ -243,6 +244,12 @@ export default {
           telefono,
           id_pais
         } = value
+
+        value.numero_documento = value.numero_documento.trim()
+        value.apellido_paterno = value.apellido_paterno.trim()
+        value.apellido_materno = value.apellido_materno.trim()
+        value.nombres = value.nombres.trim()
+        value.telefono = value.telefono.trim()
 
         if (id) {
           // Actualización del alumno existente
@@ -264,10 +271,10 @@ export default {
           if (!registerAlumno.value && registerPersona.value) {
             const dataPersona = {
               id_tipodocumento,
-              numero: numero_documento,
-              nombres,
-              apellido_paterno,
-              apellido_materno,
+              numero: numero_documento.trim(),
+              nombres: nombres.trim(),
+              apellido_paterno: apellido_paterno.trim(),
+              apellido_materno: apellido_materno.trim(),
               fecha_nacimiento,
               sexo,
               nombre_completo: nombreCompleto,
@@ -285,7 +292,9 @@ export default {
 
             if (id_pais) {
               await storePais.getPaisById(id_pais)
+
               const { result, pais } = storePais
+
               if (result && pais) {
                 const { nombre } = pais
                 dataAlumno.nombre_pais = nombre
@@ -293,6 +302,7 @@ export default {
             }
 
             await storeAlumno.createAlumno(dataAlumno);
+
             handleResult(storeAlumno.result, storeAlumno.message);
           }
         }
@@ -340,12 +350,12 @@ export default {
           }
 
           Object.assign(alumno.value, {
-            nombres: data.nombres || '',
-            apellido_paterno: data.apellido_paterno || '',
-            apellido_materno: data.apellido_materno || '',
+            nombres: data.nombres.trim() || '',
+            apellido_paterno: data.apellido_paterno.trim() || '',
+            apellido_materno: data.apellido_materno.trim() || '',
             fecha_nacimiento,
             sexo: data.sexo || '',
-            telefono: data.telefono ?? alumno.value.telefono
+            telefono: data.telefono ?? alumno.value.telefono.trim()
           });
         }
 

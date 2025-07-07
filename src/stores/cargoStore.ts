@@ -43,12 +43,12 @@ export const useCargoStore = defineStore('cargoStore', {
                 const response = await api.get(`/cargo/${id}`)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.cargo = data.data
                 } else {
-                    this.message = message|| data.error || 'Error desconocido'
+                    this.message = message || data.error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = "Error al obtener el cargo"
@@ -59,11 +59,14 @@ export const useCargoStore = defineStore('cargoStore', {
         },
         async getCargoByNombre(nombre: string) {
             try {
-                const url = `/cargo/nombre/${nombre}`
+                const url = `/cargo/nombre/${nombre.trim()}`
+
                 const response = await api.get(`${url}`)
+
                 const { data } = response
+
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.cargo = data.data
@@ -84,7 +87,7 @@ export const useCargoStore = defineStore('cargoStore', {
                 const response = await api.post('/cargo', cargo)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.cargos.push(data.data)
@@ -103,7 +106,7 @@ export const useCargoStore = defineStore('cargoStore', {
                 const response = await api.put(`/cargo/${idCargo}`, cargo)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.message = message
@@ -122,8 +125,8 @@ export const useCargoStore = defineStore('cargoStore', {
                     estado: newCargo
                 })
                 const { data } = response
-                const { result, message } = data 
-                
+                const { result, message } = data
+
                 if (result) {
                     this.result = result
                     this.message = message
@@ -141,7 +144,7 @@ export const useCargoStore = defineStore('cargoStore', {
                 const response = await api.delete(`/cargo/${idCargo}`)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.cargos = this.cargos.filter((cargo) => cargo.id !== idCargo)
