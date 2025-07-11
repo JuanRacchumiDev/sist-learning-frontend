@@ -57,11 +57,11 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">Firmado PERUAGRO:</label>
             <div class="flex items-center space-x-4">
               <label class="inline-flex items-center">
-                <input type="radio" v-model="certificado.firmado" value=true class="form-radio text-green-600">
+                <input type="radio" v-model="certificado.firmado" value="FIRMADO" class="form-radio text-green-600">
                 <span class="ml-2">Firmado</span>
               </label>
               <label class="inline-flex items-center">
-                <input type="radio" v-model="certificado.firmado" value=false class="form-radio text-red-600">
+                <input type="radio" v-model="certificado.firmado" value="NO FIRMADO" class="form-radio text-red-600">
                 <span class="ml-2">No Firmado</span>
               </label>
             </div>
@@ -263,7 +263,7 @@ export default {
         nombre_alumno_impresion: '',
         id_evento: '',
         fecha_envio: currentDate(),
-        firmado: true
+        firmado: "FIRMADO"
       };
 
       isNombreAlumnoDisabled.value = true;
@@ -276,7 +276,7 @@ export default {
         nombre_alumno_impresion: '',
         id_evento: '',
         fecha_envio: currentDate(),
-        firmado: true
+        firmado: "FIRMADO"
       };
 
       isNombreAlumnoDisabled.value = true;
