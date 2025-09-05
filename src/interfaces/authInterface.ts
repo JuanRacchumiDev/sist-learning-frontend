@@ -1,5 +1,5 @@
 export interface IAuth {
     username?: string
     password?: string
-    userAgent?: string
+    user_agent?: string
 }

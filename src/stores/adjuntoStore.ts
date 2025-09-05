@@ -82,7 +82,7 @@ export const useAdjuntoStore = defineStore('adjuntoStore', {
         },
         async updateAdjunto(idAdjunto: number, adjunto: IAdjunto) {
             try {
-                const response = await api.put(`/adjunto/${idAdjunto}`, adjunto)
+                const response = await api.patch(`/adjunto/${idAdjunto}`, adjunto)
                 const { data } = response
                 const { result, message } = data
 
@@ -136,7 +136,7 @@ export const useAdjuntoStore = defineStore('adjuntoStore', {
         },
         async updateEstado(idAdjunto: number, newEstado: boolean) {
             try {
-                const response = await api.put(`/adjunto/cambiar-estado/${idAdjunto}`, {
+                const response = await api.patch(`/adjunto/cambiar-estado/${idAdjunto}`, {
                     estado: newEstado
                 })
                 const { data } = response

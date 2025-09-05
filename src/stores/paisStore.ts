@@ -5,7 +5,7 @@ import { IPais } from '../interfaces/paisInterface'
 export const usePaisStore = defineStore('paisStore', {
     state: () => ({
         paises: [] as IPais[],
-        pais: null,
+        pais: null as IPais | null,
         loading: false,
         error: null as string | null,
         message: '',
@@ -74,10 +74,10 @@ export const usePaisStore = defineStore('paisStore', {
         },
         async updatePais(idPais: number, pais: IPais) {
             try {
-                const response = await api.put(`/alumno/${idPais}`, pais)
+                const response = await api.patch(`/alumno/${idPais}`, pais)
                 const { data } = response
                 const { result, message, error } = data
-                
+
                 if (result) {
                     this.result = result
                     this.message = message
@@ -95,7 +95,7 @@ export const usePaisStore = defineStore('paisStore', {
                 const response = await api.delete(`/pais/${idPais}`)
                 const { data } = response
                 const { result, message, error } = data
-                
+
                 if (result) {
                     this.result = result
                     this.paises = this.paises.filter((a) => a.id !== idPais)

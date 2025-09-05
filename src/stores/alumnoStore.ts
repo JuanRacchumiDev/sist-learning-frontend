@@ -1,11 +1,21 @@
 import { defineStore } from 'pinia'
 import api from '../utils/axios'
 import { IAlumno } from '../interfaces/alumnoInterface'
+import { TQuery } from '../types/TQuery';
 
 export const useAlumnoStore = defineStore('alumnoStore', {
     state: () => ({
         alumnos: [] as IAlumno[],
-        alumno: null,
+        alumno: null as IAlumno | null,
+        pagination: {
+            currentPage: 1,
+            limit: 10,
+            totalPages: 1,
+            totalItems: 0,
+            nextPage: null,
+            previousPage: null
+        },
+        currentQuery: '',
         loading: false,
         error: null as string | null,
         message: '',
@@ -15,19 +25,22 @@ export const useAlumnoStore = defineStore('alumnoStore', {
         async fetchAlumnos(estado: boolean | null = null) {
             this.loading = true
             this.error = null
+
             try {
                 const response = await api.get('/alumno')
-                const { data } = response
-                const { result } = data
+
+                const { data: dataAlumnos } = response
+
+                const { result, data } = dataAlumnos
 
                 if (result) {
-                    const alumnos = data.data
-                    if (estado) {
-                        this.alumnos = alumnos.filter((alumno: IAlumno) => alumno.estado === estado)
-                    } else {
-                        this.alumnos = alumnos
-                    }
                     this.result = result
+
+                    if (estado) {
+                        this.alumnos = data.filter((alumno: IAlumno) => alumno.estado === estado)
+                    } else {
+                        this.alumnos = data
+                    }
                 }
             } catch (error) {
                 this.result = false
@@ -36,17 +49,60 @@ export const useAlumnoStore = defineStore('alumnoStore', {
                 this.loading = false
             }
         },
+        async fetchAlumnosPaginate({ page = 1, query = '', limit = 10 }: TQuery) {
+            this.loading = true
+            this.error = null
+
+            const finalQuery = (query !== undefined && query.length > 0) ? query : this.currentQuery
+
+            if (query !== undefined) {
+                this.currentQuery = finalQuery
+            }
+
+            try {
+                const response = await api.get('/alumno/paginate', {
+                    params: {
+                        page,
+                        limit,
+                        busqueda: finalQuery
+                    }
+                })
+
+                const { data } = response
+
+                const { result, data: alumnosData, pagination, message } = data
+
+                if (result) {
+                    this.alumnos = alumnosData
+                    this.pagination = pagination
+                    this.result = result
+                    this.message = message || "Alumnos cargados exitosamente"
+                } else {
+                    this.alumnos = []
+                    this.pagination = { ...this.pagination, totalItems: 0, totalPages: 1, currentPage: 1 }
+                    this.result = false;
+                    this.message = message || 'No se pudieron cargar los alumnos';
+                }
+            } catch (error) {
+                this.result = false;
+                this.message = 'Error al cargar los alumnos.';
+                console.error('Error fetching alumnos: ', error);
+            } finally {
+                this.loading = false
+            }
+        },
         async getAlumnoById(id: number) {
             try {
                 const response = await api.get(`/alumno/${id}`)
-                const { data } = response
-                const { result, message } = data
+                const { data: dataAlumno } = response
+                const { result, message, data, error } = dataAlumno
 
                 if (result) {
                     this.result = result
-                    this.alumno = data.data
+                    this.alumno = data as IAlumno
+                    this.message = message || "Alumno encontrado correctamente"
                 } else {
-                    this.message = message || data.error || 'Error desconocido'
+                    this.message = message || error || 'Error desconocido'
                 }
             } catch (error) {
                 this.result = false
@@ -64,16 +120,16 @@ export const useAlumnoStore = defineStore('alumnoStore', {
                 const url = `/alumno/tipo-documento/${idTipoDoc}/numero-documento/${numDoc}`
                 const response = await api.get(`${url}`)
 
-                const { data } = response
-                const { result, message } = data
+                const { data: dataAlumno } = response
+                const { result, message, data, error } = dataAlumno
 
                 if (result) {
                     this.result = result
-                    this.alumno = data.data
+                    this.alumno = data as IAlumno
                     this.message = message
                 } else {
                     this.alumno = null
-                    this.message = message || data.error || 'Error desconocido'
+                    this.message = message || error || 'Error desconocido'
                 }
             } catch (error) {
                 this.result = false
@@ -87,13 +143,13 @@ export const useAlumnoStore = defineStore('alumnoStore', {
         async createAlumno(alumno: IAlumno) {
             try {
                 const response = await api.post('/alumno', alumno)
-                const { data } = response
-                const { result, message, error } = data
+                const { data: dataAlumno } = response
+                const { result, message, error, data } = dataAlumno
 
                 if (result) {
                     this.result = result
-                    this.alumnos.push(response.data.data)
-                    this.message = response.data.message
+                    this.alumnos.push(data)
+                    this.message = message
                 } else {
                     this.message = message || error || 'Error desconocido'
                 }
@@ -105,13 +161,13 @@ export const useAlumnoStore = defineStore('alumnoStore', {
         },
         async updateAlumno(idAlumno: number, alumno: IAlumno) {
             try {
-                const response = await api.put(`/alumno/${idAlumno}`, alumno)
-                const { data } = response
-                const { result, message, error } = data
+                const response = await api.patch(`/alumno/${idAlumno}`, alumno)
+                const { data: dataAlumno } = response
+                const { result, message, error } = dataAlumno
 
                 if (result) {
                     this.result = result
-                    this.message = response.data.message
+                    this.message = message
                 } else {
                     this.message = message || error || 'Error desconocido'
                 }
@@ -123,15 +179,20 @@ export const useAlumnoStore = defineStore('alumnoStore', {
         },
         async updateEstado(idAlumno: number, newEstado: boolean) {
             try {
-                const response = await api.put(`/alumno/cambiar-estado/${idAlumno}`, {
+                const response = await api.patch(`/alumno/cambiar-estado/${idAlumno}`, {
                     estado: newEstado
                 })
-                const { data } = response
-                const { result, message, error } = data
+                const { data: dataAlumno } = response
+                const { result, message, error } = dataAlumno
 
                 if (result) {
                     this.result = result
-                    this.message = data.message
+                    this.message = message
+                    this.fetchAlumnosPaginate({
+                        page: this.pagination.currentPage,
+                        query: this.currentQuery,
+                        limit: this.pagination.limit
+                    })
                 } else {
                     this.message = message || error || 'Error desconocido'
                 }
@@ -144,19 +205,29 @@ export const useAlumnoStore = defineStore('alumnoStore', {
         async deleteAlumno(idAlumno: number) {
             try {
                 const response = await api.delete(`/alumno/${idAlumno}`)
+
                 const { data } = response
+
                 const { result, message, error } = data
 
                 if (result) {
                     this.result = result
-                    this.alumnos = this.alumnos.filter((a) => a.id !== idAlumno)
+
                     this.message = message
+
+                    this.fetchAlumnosPaginate({
+                        page: this.pagination.currentPage,
+                        query: this.currentQuery,
+                        limit: this.pagination.limit
+                    })
                 } else {
                     this.message = message || error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = 'Error al eliminar el alumno'
+
                 this.result = false
+
                 console.error('Error deleting alumno: ', error)
             }
         }

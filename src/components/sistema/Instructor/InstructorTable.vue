@@ -19,11 +19,6 @@
     <div class="flex flex-col">
       <!-- Cabecera -->
       <div class="grid grid-cols-6 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6 text-center text-xs">
-        <!--
-        <div class="p-2.5 xl:p-5 text-left sm:text-center">
-          <h5 class="uppercase">ID</h5>
-        </div>
-        -->
         <div class="p-2.5 xl:p-5">
           <h5 class="uppercase">Tipo de documento</h5>
         </div>
@@ -52,15 +47,10 @@
 
       <div v-for="(instructor, index) in paginatedInstructores" :key="instructor.id"
         :class="`grid grid-cols-6 sm:grid-cols-6 items-center text-xs ${index < paginatedInstructores.length - 1 ? 'border-b border-stroke dark:border-strokedark' : ''}`">
-        <!--
-        <div class="p-2.5 xl:p-5 text-left sm:text-center text-black dark:text-white">
-          {{ instructor.id }}
-        </div>
-        -->
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
           <p class="text-black dark:text-white">
             {{
-              instructor.TipoDocumento ? instructor.TipoDocumento.abreviatura : 'Sin tipo documento'
+              instructor.tipoDocumento ? instructor.tipoDocumento.abreviatura : 'Sin tipo documento'
             }}
           </p>
         </div>

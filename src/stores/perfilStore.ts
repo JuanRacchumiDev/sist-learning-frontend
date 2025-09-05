@@ -5,7 +5,7 @@ import { IPerfil } from '../interfaces/perfilInterface'
 export const usePerfilStore = defineStore('perfilStore', {
     state: () => ({
         perfiles: [] as IPerfil[],
-        perfil: null,
+        perfil: null as IPerfil | null,
         loading: false,
         error: null as string | null,
         message: '',
@@ -23,7 +23,7 @@ export const usePerfilStore = defineStore('perfilStore', {
 
                 if (result) {
                     const perfiles = data.data
-                
+
                     if (estado) {
                         this.result = result
                         this.perfiles = perfiles.filter((perfil: IPerfil) => perfil.estado === estado)
@@ -62,7 +62,7 @@ export const usePerfilStore = defineStore('perfilStore', {
                 const response = await api.post('/perfil', perfil)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.perfiles.push(data.data)
@@ -78,10 +78,10 @@ export const usePerfilStore = defineStore('perfilStore', {
         },
         async updatePerfil(idPerfil: number, perfil: IPerfil) {
             try {
-                const response = await api.put(`/perfil/${idPerfil}`, perfil)
+                const response = await api.patch(`/perfil/${idPerfil}`, perfil)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.message = message
@@ -96,7 +96,7 @@ export const usePerfilStore = defineStore('perfilStore', {
         },
         async updateEstado(idPerfil: number, newEstado: boolean) {
             try {
-                const response = await api.put(`/perfil/cambiar-estado/${idPerfil}`, {
+                const response = await api.patch(`/perfil/cambiar-estado/${idPerfil}`, {
                     estado: newEstado
                 })
                 const { data } = response
@@ -119,7 +119,7 @@ export const usePerfilStore = defineStore('perfilStore', {
                 const response = await api.delete(`/perfil/${idPerfil}`)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.perfiles = this.perfiles.filter((perfil) => perfil.id !== idPerfil)

@@ -105,7 +105,7 @@ import {
   useCertificadoStore,
   useToastStore
 } from "@/stores"
-import { currentDate } from "@/utils/date.utils";
+import { currentDate, formatDateForInput } from "@/utils/date.utils";
 
 export default {
   setup() {
@@ -203,13 +203,16 @@ export default {
 
       if (certificadoId) {
         await storeCertificado.getCertificadoById(certificadoId)
-        certificado.value = storeCertificado.certificado || {}
 
-        if (certificado.value) {
-          const partFecha = certificado.value.fecha_envio.split("T")
-          certificado.value.fecha_envio = partFecha[0]
+        if (storeCertificado.certificado) {
+          certificado.value = storeCertificado.certificado
+
+          const { fecha_envio } = storeCertificado.certificado
+
+          if (fecha_envio) {
+            certificado.value.fecha_envio = formatDateForInput(fecha_envio)
+          }
         }
-        storeCertificado.message = ""
       }
     })
 
@@ -221,9 +224,8 @@ export default {
         loading.value = true; // Activar el spinner
 
         certificado.value.nombre_alumno_impresion = certificado.value.nombre_alumno_impresion.trim()
+
         certificado.value.firmado = (certificado.value.firmado === 'FIRMADO') ? true : false
-        console.log('certificado.value', certificado.value)
-        console.log('certificado.value.firmado', certificado.value.firmado)
 
         if (certificado.value.id) {
           await storeCertificado.updateCertificado(

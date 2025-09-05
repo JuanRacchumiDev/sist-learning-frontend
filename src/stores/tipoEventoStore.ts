@@ -5,7 +5,7 @@ import { ITipoEvento } from '../interfaces/tipoEventoInterface'
 export const useTipoEventoStore = defineStore('tipoEventoStore', {
     state: () => ({
         tipos: [] as ITipoEvento[],
-        tipoEvento: null,
+        tipoEvento: null as ITipoEvento | null,
         loading: false,
         error: null as string | null,
         message: '',
@@ -22,7 +22,7 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
 
                 if (result) {
                     const tipos = data.data
-                
+
                     if (estado) {
                         this.result = result
                         this.tipos = tipos.filter((tipo: ITipoEvento) => tipo.estado === estado)
@@ -42,7 +42,7 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                 const response = await api.get(`/tipo-evento/${id}`)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.tipoEvento = data.data
@@ -63,7 +63,7 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                 const response = await api.get(`${url}`)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.tipoEvento = data.data
@@ -83,8 +83,8 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
             try {
                 const response = await api.post('/tipo-evento', tipoEvento)
                 const { data } = response
-                const { result, message } = data                
-                
+                const { result, message } = data
+
                 if (result) {
                     this.result = result
                     this.tipos.push(data.data)
@@ -100,10 +100,10 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
         },
         async updateTipoEvento(idTipoEvento: number, tipoEvento: ITipoEvento) {
             try {
-                const response = await api.put(`/tipo-evento/${idTipoEvento}`, tipoEvento)
+                const response = await api.patch(`/tipo-evento/${idTipoEvento}`, tipoEvento)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.message = message
@@ -118,7 +118,7 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
         },
         async updateEstado(idTipoEvento: number, newEstado: boolean) {
             try {
-                const response = await api.put(`/tipo-evento/cambiar-estado/${idTipoEvento}`, {
+                const response = await api.patch(`/tipo-evento/cambiar-estado/${idTipoEvento}`, {
                     estado: newEstado
                 })
                 const { data } = response
@@ -141,7 +141,7 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                 const response = await api.delete(`/tipo-evento/${idTipoEvento}`)
                 const { data } = response
                 const { result, message, error } = data
-                
+
                 if (result) {
                     this.result = result
                     this.tipos = this.tipos.filter((tipo) => tipo.id !== idTipoEvento)

@@ -5,7 +5,7 @@ import { IInstructor } from '../interfaces/instructorInterface'
 export const useInstructorStore = defineStore('instructorStore', {
     state: () => ({
         instructores: [] as IInstructor[],
-        instructor: null,
+        instructor: null as IInstructor | null,
         loading: false,
         error: null as string | null,
         message: '',
@@ -17,12 +17,14 @@ export const useInstructorStore = defineStore('instructorStore', {
             this.error = null
             try {
                 const response = await api.get('/instructor')
-                const { data } = response
-                const { result } = data
+
+                const { data: dataInstructores } = response
+
+                const { result, data } = dataInstructores
 
                 if (result) {
-                    const instructores = data.data
-                    this.instructores = instructores
+                    this.instructores = data
+
                     this.result = result
                 }
             } catch (error) {
@@ -35,12 +37,14 @@ export const useInstructorStore = defineStore('instructorStore', {
         async getInstructorById(id: number) {
             try {
                 const response = await api.get(`/instructor/${id}`)
-                const { data } = response
-                const { result, message, error } = data
+
+                const { data: dataInstructor } = response
+
+                const { result, message, error, data } = dataInstructor
 
                 if (result) {
                     this.result = result
-                    this.instructor = response.data.data
+                    this.instructor = data
                 } else {
                     this.message = message || error || 'Error desconocido'
                 }
@@ -58,18 +62,20 @@ export const useInstructorStore = defineStore('instructorStore', {
                 this.message = ""
 
                 const url = `/instructor/tipo-documento/${idTipoDoc}/numero-documento/${numDoc}`
+
                 const response = await api.get(`${url}`)
 
-                const { data } = response
-                const { result, message, error } = data
+                const { data: dataInstructor } = response
+
+                const { result, message, error, data } = dataInstructor
 
                 if (result) {
                     this.result = result
-                    this.instructor = data.data
+                    this.instructor = data
                     this.message = message
                 } else {
                     this.instructor = null
-                    this.message = message || data.error || 'Error desconocido'
+                    this.message = message || error || 'Error desconocido'
                 }
             } catch (error) {
                 this.result = false
@@ -83,12 +89,14 @@ export const useInstructorStore = defineStore('instructorStore', {
         async createInstructor(instructor: IInstructor) {
             try {
                 const response = await api.post('/instructor', instructor)
-                const { data } = response
-                const { result, message, error } = data
+
+                const { data: dataInstructor } = response
+
+                const { result, message, error, data } = dataInstructor
 
                 if (result) {
                     this.result = result
-                    this.instructores.push(response.data.data)
+                    this.instructores.push(data)
                     this.message = message
                 } else {
                     this.message = message || error || 'Error desconocido'
@@ -101,13 +109,15 @@ export const useInstructorStore = defineStore('instructorStore', {
         },
         async updateInstructor(idInstructor: number, instructor: IInstructor) {
             try {
-                const response = await api.put(`/instructor/${idInstructor}`, instructor)
-                const { data } = response
-                const { result, message, error } = data
+                const response = await api.patch(`/instructor/${idInstructor}`, instructor)
+
+                const { data: dataInstructor } = response
+
+                const { result, message, error } = dataInstructor
 
                 if (result) {
                     this.result = result
-                    this.message = response.data.message
+                    this.message = message
                 } else {
                     this.message = message || error || 'Error desconocido'
                 }
@@ -119,10 +129,11 @@ export const useInstructorStore = defineStore('instructorStore', {
         },
         async updateEstado(idInstructor: number, newEstado: boolean) {
             try {
-                const response = await api.put(`/instructor/cambiar-estado/${idInstructor}`, {
+                const response = await api.patch(`/instructor/cambiar-estado/${idInstructor}`, {
                     estado: newEstado
                 })
                 const { data } = response
+
                 const { result, message, error } = data
 
                 if (result) {

@@ -5,7 +5,7 @@ import { IUsuario } from '../interfaces/usuarioInterface'
 export const useUsuarioStore = defineStore('usuarioStore', {
     state: () => ({
         usuarios: [] as IUsuario[],
-        usuario: null,
+        usuario: null as IUsuario | null,
         loading: false,
         error: null as string | null,
         message: '',
@@ -81,7 +81,7 @@ export const useUsuarioStore = defineStore('usuarioStore', {
         },
         async updateUsuario(idUsuario: number, usuario: IUsuario) {
             try {
-                const response = await api.put(`/usuario/${idUsuario}`, usuario)
+                const response = await api.patch(`/usuario/${idUsuario}`, usuario)
                 const { data } = response
                 const { result, message } = data
 

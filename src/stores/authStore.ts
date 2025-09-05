@@ -30,14 +30,14 @@ export const useAuthStore = defineStore({
                 const authItem: IAuth = {
                     username,
                     password,
-                    userAgent
+                    user_agent: userAgent
                 }
 
                 const response = await api.post('/auth/login', authItem)
 
                 const { data } = response
 
-                const { result, message, token } = data
+                const { result, message, token, usuario } = data
 
                 if (result) {
 
@@ -45,32 +45,30 @@ export const useAuthStore = defineStore({
 
                     const {
                         id,
-                        idAlumno,
-                        idInstructor,
-                        idPerfil,
-                        idTrabajador,
-                        nombrePerfil,
-                        slugPerfil,
-                        username,
-                        usuario
-                    } = data.usuario
+                        id_alumno,
+                        id_instructor,
+                        id_perfil,
+                        id_trabajador,
+                        nombre_perfil,
+                        slug_perfil,
+                        username
+                    } = usuario
 
                     this.usuario.id = id
-                    this.usuario.id_alumno = idAlumno
-                    this.usuario.id_instructor = idInstructor
-                    this.usuario.id_trabajador = idTrabajador
-                    this.usuario.id_perfil = idPerfil
-                    this.usuario.nombre_perfil = nombrePerfil
-                    this.usuario.slug_perfil = slugPerfil
+                    this.usuario.id_alumno = id_alumno
+                    this.usuario.id_instructor = id_instructor
+                    this.usuario.id_trabajador = id_trabajador
+                    this.usuario.id_perfil = id_perfil
+                    this.usuario.nombre_perfil = nombre_perfil
+                    this.usuario.slug_perfil = slug_perfil
                     this.usuario.username = username
-                    this.usuario.usuario = usuario
 
                     const dataLogin = {
                         token,
                         usuario: this.usuario
                     }
 
-                    const urlRedireccion = (slugPerfil === 'estudiante' || slugPerfil === 'instructor')
+                    const urlRedireccion = (slug_perfil === 'estudiante' || slug_perfil === 'instructor')
                         ? '/certificado'
                         : '/dashboard'
 

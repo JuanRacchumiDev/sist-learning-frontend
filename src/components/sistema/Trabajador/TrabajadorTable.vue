@@ -19,11 +19,6 @@
     <div class="flex flex-col">
       <!-- Cabecera -->
       <div class="grid grid-cols-7 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-7 text-center text-xs">
-        <!--
-        <div class="p-2.5 xl:p-5 text-left sm:text-center">
-          <h5 class="uppercase">ID</h5>
-        </div>
-        -->
         <div class="p-2.5 xl:p-5">
           <h5 class="uppercase">Tipo documento</h5>
         </div>
@@ -55,20 +50,15 @@
 
       <div v-for="(trabajador, index) in paginatedTrabajadores" :key="trabajador.id"
         :class="`grid grid-cols-7 sm:grid-cols-7 items-center text-xs ${index < paginatedTrabajadores.length - 1 ? 'border-b border-stroke dark:border-strokedark' : ''}`">
-        <!--
-        <div class="p-2.5 xl:p-5 text-left sm:text-center text-black dark:text-white">
-          {{ trabajador.id }}
-        </div>
-        -->
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
           <p class="text-black dark:text-white">
-            {{ trabajador.TipoDocumento ? trabajador.TipoDocumento.abreviatura : '--' }}
+            {{ trabajador.tipoDocumento ? trabajador.tipoDocumento.abreviatura : '--' }}
           </p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
           <p class="text-black dark:text-white">
             {{
-              trabajador.Cargo ? trabajador.Cargo.nombre : '--'
+              trabajador.cargo ? trabajador.cargo.nombre : '--'
             }}
           </p>
         </div>

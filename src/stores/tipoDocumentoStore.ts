@@ -5,7 +5,7 @@ import { ITipoDocumento } from '../interfaces/tipoDocumentoInterface'
 export const useTipoDocumentoStore = defineStore('tipoDocumentoStore', {
     state: () => ({
         tipos: [] as ITipoDocumento[],
-        tipoDocumento: null,
+        tipoDocumento: null as ITipoDocumento | null,
         loading: false,
         error: null as string | null,
         message: '',
@@ -20,7 +20,7 @@ export const useTipoDocumentoStore = defineStore('tipoDocumentoStore', {
                 const response = await api.get('/tipo-documento')
                 const { data } = response
                 const { result } = data
-                
+
                 if (result) {
                     this.result = result
                     this.tipos = data.data
@@ -44,7 +44,7 @@ export const useTipoDocumentoStore = defineStore('tipoDocumentoStore', {
                 if (result) {
                     this.result = result
                     this.tipos = data.data
-                }            
+                }
             } catch (error) {
                 this.result = false
                 console.error('Error fetching tipo documentos por categoria: ', error)
@@ -90,7 +90,7 @@ export const useTipoDocumentoStore = defineStore('tipoDocumentoStore', {
         },
         async updateTipoDocumento(idTipoDocumento: number, tipoDocumento: ITipoDocumento) {
             try {
-                const response = await api.put(`/tipo-documento/${idTipoDocumento}`, tipoDocumento)
+                const response = await api.patch(`/tipo-documento/${idTipoDocumento}`, tipoDocumento)
                 const { data } = response
                 const { result, message } = data
 

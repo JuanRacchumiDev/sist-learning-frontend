@@ -5,7 +5,7 @@ import { IPersona } from '../interfaces/personaInterface'
 export const usePersonaStore = defineStore('personaStore', {
     state: () => ({
         personas: [] as IPersona[],
-        persona: null,
+        persona: null as IPersona | null,
         loading: false,
         error: null as string | null,
         message: '',
@@ -14,7 +14,7 @@ export const usePersonaStore = defineStore('personaStore', {
     actions: {
         async getDocumentoInfo(idTipoDocumento: number, numeroDocumento: string) {
             this.error = null
-            
+
             try {
                 const url = `/documento/infodoc/${idTipoDocumento}/numdoc/${numeroDocumento}`
                 const response = await api.get(`${url}`)

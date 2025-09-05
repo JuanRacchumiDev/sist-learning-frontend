@@ -5,7 +5,7 @@ import { ITrabajador } from '../interfaces/trabajadorInterface'
 export const useTrabajadorStore = defineStore('trabajadorStore', {
     state: () => ({
         trabajadores: [] as ITrabajador[],
-        trabajador: null,
+        trabajador: null as ITrabajador | null,
         loading: false,
         error: null as string | null,
         message: '',
@@ -15,19 +15,20 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
         async fetchTrabajadores(estado: boolean | null = null) {
             this.loading = true
             this.error = null
+
             try {
                 const response = await api.get('/trabajador')
 
-                const { data } = response
-                const { result } = data
+                const { data: dataPersonas } = response
+                const { result, data } = dataPersonas
 
                 if (result) {
                     this.result = result
-                    const trabajadores = data.data
+
                     if (estado) {
-                        this.trabajadores = trabajadores.filter((trabajador: ITrabajador) => trabajador.estado === estado)
+                        this.trabajadores = data.filter((trabajador: ITrabajador) => trabajador.estado === estado)
                     } else {
-                        this.trabajadores = trabajadores
+                        this.trabajadores = data
                     }
                 }
             } catch (error) {
@@ -106,7 +107,7 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
         },
         async updateTrabajador(idTrabajador: number, trabajador: ITrabajador) {
             try {
-                const response = await api.put(`/trabajador/${idTrabajador}`, trabajador)
+                const response = await api.patch(`/trabajador/${idTrabajador}`, trabajador)
                 const { data } = response
                 const { result, message } = data
 

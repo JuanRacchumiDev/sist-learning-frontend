@@ -5,7 +5,7 @@ import { ICargo } from '../interfaces/cargoInterface'
 export const useCargoStore = defineStore('cargoStore', {
     state: () => ({
         cargos: [] as ICargo[],
-        cargo: null,
+        cargo: null as ICargo | null,
         loading: false,
         error: null as string | null,
         message: '',
@@ -103,7 +103,7 @@ export const useCargoStore = defineStore('cargoStore', {
         },
         async updateCargo(idCargo: number, cargo: ICargo) {
             try {
-                const response = await api.put(`/cargo/${idCargo}`, cargo)
+                const response = await api.patch(`/cargo/${idCargo}`, cargo)
                 const { data } = response
                 const { result, message } = data
 
@@ -121,7 +121,7 @@ export const useCargoStore = defineStore('cargoStore', {
         },
         async updateEstado(idCargo: number, newCargo: boolean) {
             try {
-                const response = await api.put(`/cargo/cambiar-estado/${idCargo}`, {
+                const response = await api.patch(`/cargo/cambiar-estado/${idCargo}`, {
                     estado: newCargo
                 })
                 const { data } = response
