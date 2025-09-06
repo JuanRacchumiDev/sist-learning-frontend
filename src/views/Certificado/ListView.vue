@@ -32,22 +32,4 @@ onMounted(() => {
     certificadorStore.currentQuery = ""
     certificadorStore.fetchCertificados({})
 })
-
-// export default {
-//     name: 'ListView',
-//     components: {
-//         DefaultLayout,
-//         CertificadoTable,
-//         BreadcrumbDefault
-//     },
-//     setup() {
-//         const pageTitle = ref("Listado")
-//         const urlCurrentName = ref("Certificado")
-
-//         return {
-//             pageTitle,
-//             urlCurrentName
-//         }
-//     }
-// }
 </script>

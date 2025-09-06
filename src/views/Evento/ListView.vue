@@ -32,22 +32,4 @@ onMounted(() => {
     eventoStore.currentQuery = ""
     eventoStore.fetchEventosPaginate({})
 })
-
-// export default {
-//     name: 'ListView',
-//     components: {
-//         DefaultLayout,
-//         EventoTable,
-//         BreadcrumbDefault
-//     },
-//     setup() {
-//         const pageTitle = ref("Listado")
-//         const urlCurrentName = ref("Evento")
-
-//         return {
-//             pageTitle,
-//             urlCurrentName
-//         }
-//     }
-// }
 </script>

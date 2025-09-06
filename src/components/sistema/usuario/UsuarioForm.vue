@@ -266,7 +266,6 @@ export default {
                     if (storeUsuario.result) resetForm()
                 }
 
-                // message.value = storeUsuario.message
                 isDuplicated.value = false
                 personaSeleccionada.value = null
                 search.value = ""
