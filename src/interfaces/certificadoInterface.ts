@@ -5,12 +5,12 @@ export interface ICertificado {
     id?: number
     id_alumno?: number
     id_evento?: number
-    nombre_alumno_impresion?: string
+    id_plantilla?: number
     codigo?: string
-    codigoQR?: string
+    codigo_qr?: string
     ruta?: string
-    fileName?: string
-    templateName?: string
+    filename?: string
+    nombre_impresion?: string
     fecha_registro?: Date
     fecha_descarga?: Date
     fecha_envio?: Date

@@ -118,6 +118,69 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 this.loading = false
             }
         },
+        async fetchCertificadoById(id: number) {
+            this.loading = true
+            this.error = null
+
+            try {
+                const response = await api.get(`/certificado/${id}`)
+
+                const { data: dataCertificado } = response
+
+                const { data, message, result, status, error } = dataCertificado
+
+                if (result && status === 200) {
+                    this.certificado = data as ICertificado
+                    this.message = message || "Certificado obtenido correctamente"
+                    this.result = true
+                } else {
+                    this.message = message || error || 'Error desconocido'
+                    this.certificado = null
+                    this.result = false
+                }
+            } catch (error) {
+                this.result = false
+                this.message = "Error al obtener el certificado"
+                this.error = error instanceof Error ? error.message : 'Error desconocido'
+                console.error('Error fetching certificado metadata:', error);
+            }
+        },
+        async downloadCertificadoByName(filename: string) {
+            this.loading = true
+            this.error = null
+
+            try {
+                const urlApi = `/certificado/download/name/${filename}`;
+
+                const response = await api.get(urlApi, {
+                    responseType: 'blob'
+                });
+
+                const { status, data } = response;
+
+                if (status === 200) {
+                    this.result = true;
+                    this.message = 'Certificado descargado correctamente';
+
+                    const url = window.URL.createObjectURL(new Blob([data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                } else {
+                    this.result = false;
+                    this.message = 'Error al descargar el certificado';
+                }
+            } catch (error) {
+                this.result = false;
+                this.message = 'Error al descargar el certificado';
+                console.error('Error downloading certificate by name:', error);
+            } finally {
+                this.loading = false;
+            }
+        },
         async createCertificado(certificado: ICertificado) {
             try {
                 const response = await api.post(`/certificado`, certificado, {
@@ -160,108 +223,6 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 this.result = false
                 this.message = "Error al crear el certificado"
                 console.error('Error creating certificado', error)
-            }
-        },
-        async getCertificadoById(id: number) {
-            try {
-                const response = await api.get(`/certificado/${id}`)
-
-                const { data: dataCertificado } = response
-
-                const { data, message, result, status, error } = dataCertificado
-
-                if (result && status === 200) {
-                    this.certificado = data as ICertificado
-                } else {
-                    this.message = message || error || 'Error desconocido'
-                    this.certificado = null
-                }
-            } catch (error) {
-                this.result = false
-                this.message = "Error al obtener el certificado"
-                this.error = error instanceof Error ? error.message : 'Error desconocido'
-            }
-        },
-        async getCertificadoByCodigo(codigo: string) {
-            this.loading = true
-            this.error = null
-
-            try {
-                const urlApi = `/certificado/codigo/${codigo}`
-
-                const response = await api.get(urlApi)
-
-                const { data: dataCertificado } = response
-
-                const { result, message, error, data } = dataCertificado
-
-                if (result) {
-                    const index = this.certificados.findIndex((c) => c.id === data.id)
-
-                    if (index !== -1) {
-                        this.certificados[index] = data
-                    } else {
-                        this.certificados.push(data)
-                    }
-
-                    this.certificado = data
-                    return data
-                } else {
-                    this.message = message || error || 'Error desconocido'
-                    return null
-                }
-            } catch (error) {
-                this.result = false
-                this.error = 'Error al obtener el certificado'
-            }
-        },
-        async downloadCertificado(idCertificado: number) {
-            try {
-                const urlApi = `/certificado/${idCertificado}/download`
-
-                const response = await api.get(urlApi, {
-                    responseType: 'blob'
-                })
-
-                const { status, data } = response
-
-                if (status === 200) {
-                    this.result = true
-                    this.message = "Certificado descargado correctamente"
-
-                    await this.getCertificadoById(idCertificado)
-
-                    if (this.certificado) {
-                        const alumno = this.certificado.alumno
-
-                        const nombreCompleto = alumno?.nombre_capitalized as string
-
-                        const sanitizedAlumno = sanitizeFileName(nombreCompleto)
-
-                        const fileName = `certificado_${sanitizedAlumno}.pdf`
-
-                        const url = window.URL.createObjectURL(new Blob([data]));
-
-                        const link = document.createElement('a');
-
-                        link.href = url;
-
-                        link.setAttribute('download', `${fileName}`);
-
-                        document.body.appendChild(link);
-
-                        link.click();
-
-                        link.remove();
-                    }
-                } else {
-                    this.result = false
-                    this.message = "Error al descargar el certificado"
-                }
-            } catch (error) {
-                this.result = false
-                this.message = "Error para descargar el certificado"
-                console.error('Error downloading certificado', error)
             }
         },
         async updateCertificado(idCertificado: number, certificado: ICertificado) {

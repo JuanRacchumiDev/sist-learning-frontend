@@ -42,11 +42,11 @@
           <div v-if="errors.duracion" class="text-red-600 text-sm mt-1">{{ errors.duracion }}</div>
         </div>
         <div class="mb-1">
-          <label for="fecha" class="block text-sm font-medium text-gray-700">Fecha Inicio: <span
+          <label for="fecha_inicio" class="block text-sm font-medium text-gray-700">Fecha Inicio: <span
               class="text-red-500">*</span></label>
-          <input v-model="evento.fecha" type="date" id="fecha" autocomplete="off"
+          <input v-model="evento.fecha_inicio" type="date" id="fecha_inicio" autocomplete="off"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
-          <div v-if="errors.fecha" class="text-red-600 text-sm mt-1">{{ errors.fecha }}</div>
+          <div v-if="errors.fecha_inicio" class="text-red-600 text-sm mt-1">{{ errors.fecha_inicio }}</div>
         </div>
         <div class="mb-1">
           <label for="fecha_fin" class="block text-sm font-medium text-gray-700">Fecha Final:</label>
@@ -147,7 +147,7 @@ export default {
       id_tipoevento: '',
       id_instructor: '',
       temario: '',
-      fecha: null,
+      fecha_inicio: null,
       fecha_fin: null,
       duracion: '',
       modalidad: 'Virtual',
@@ -188,8 +188,8 @@ export default {
         errors.value.titulo = 'El título es obligatorio'
       }
 
-      if (!evento.value.fecha) {
-        errors.value.fecha = 'La fecha de inicio es obligatoria'
+      if (!evento.value.fecha_inicio) {
+        errors.value.fecha_inicio = 'La fecha de inicio es obligatoria'
       }
 
       if (!evento.value.duracion || evento.value.duracion.trim() === '') {
@@ -266,7 +266,7 @@ export default {
         id_tipoevento: '',
         titulo: '',
         temario: '',
-        fecha: null,
+        fecha_inicio: null,
         fecha_fin: '',
         duracion: '',
         modalidad: 'Virtual',
@@ -281,7 +281,7 @@ export default {
         id_tipoevento: '',
         titulo: '',
         temario: '',
-        fecha: null,
+        fecha_inicio: null,
         fecha_fin: '',
         duracion: '',
         modalidad: 'Virtual',
@@ -306,7 +306,7 @@ export default {
             const partsNombrePlantilla = partsPlantilla[1].split(".")
             evento.value.plantilla_certificado = partsNombrePlantilla[0]
           }
-          const partFecha = evento.value.fecha.split("T")
+          const partFecha = evento.value.fecha_inicio.split("T")
           evento.value.fecha = partFecha[0]
         }
       }

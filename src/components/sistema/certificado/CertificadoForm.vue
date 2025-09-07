@@ -40,11 +40,11 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Nombre alumno (para impresión): <span
                 class="text-red-500">*</span></label>
-            <input v-model="certificado.nombre_alumno_impresion" type="text" placeholder="Ej. Juan Pérez Rodríguez"
+            <input v-model="certificado.nombre_impresion" type="text" placeholder="Ej. Juan Pérez Rodríguez"
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
               maxlength="100" />
-            <div v-if="errors.nombre_alumno_impresion" class="text-red-600 text-sm mt-1">{{
-              errors.nombre_alumno_impresion }}</div>
+            <div v-if="errors.nombre_impresion" class="text-red-600 text-sm mt-1">{{
+              errors.nombre_impresion }}</div>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Fecha de emisión: <span
@@ -112,8 +112,9 @@ export default {
     const certificado = ref({
       id: null,
       id_alumno: '',
-      nombre_alumno_impresion: '',
       id_evento: '',
+      id_plantilla: 1,
+      nombre_impresion: '',
       fecha_envio: currentDate(),
       firmado: "FIRMADO"
     });
@@ -126,9 +127,11 @@ export default {
 
     const alumnos = computed(() => storeAlumno.alumnos)
 
-    const eventos = computed(() => {
-      return [...storeEvento.eventos].sort((a, b) => a.titulo.localeCompare(b.titulo))
-    })
+    // const eventos = computed(() => {
+    //   return [...storeEvento.eventos].sort((a, b) => a.titulo.localeCompare(b.titulo))
+    // })
+
+    const eventos = computed(() => storeEvento.eventos)
 
     const searchQuery = ref('')
     const loading = ref(false)
@@ -156,8 +159,8 @@ export default {
         errors.value.id_evento = 'Seleccione un evento'
       }
 
-      if (!certificado.value.nombre_alumno_impresion || certificado.value.nombre_alumno_impresion.trim() === '') {
-        errors.value.nombre_alumno_impresion = 'El nombre del alumno es obligatorio'
+      if (!certificado.value.nombre_impresion || certificado.value.nombre_impresion.trim() === '') {
+        errors.value.nombre_impresion = 'El nombre del alumno es obligatorio'
       }
 
       if (!certificado.value.fecha_envio) {
@@ -189,7 +192,7 @@ export default {
 
     const selectAlumno = (alumno) => {
       certificado.value.id_alumno = alumno.id;
-      certificado.value.nombre_alumno_impresion = `${alumno.nombres.trim()} ${alumno.apellido_paterno.trim()} ${alumno.apellido_materno.trim()}`;
+      certificado.value.nombre_impresion = `${alumno.nombres.trim()} ${alumno.apellido_paterno.trim()} ${alumno.apellido_materno.trim()}`;
       searchQuery.value = ''; // Limpiar la búsqueda
     };
 
@@ -223,7 +226,7 @@ export default {
         templateError.value = false;
         loading.value = true; // Activar el spinner
 
-        certificado.value.nombre_alumno_impresion = certificado.value.nombre_alumno_impresion.trim()
+        certificado.value.nombre_impresion = certificado.value.nombre_impresion.trim()
 
         certificado.value.firmado = (certificado.value.firmado === 'FIRMADO') ? true : false
 
@@ -262,8 +265,9 @@ export default {
     const cancelar = () => {
       certificado.value = {
         id_alumno: '',
-        nombre_alumno_impresion: '',
+        nombre_impresion: '',
         id_evento: '',
+        id_plantilla: 1,
         fecha_envio: currentDate(),
         firmado: "FIRMADO"
       };
@@ -275,7 +279,7 @@ export default {
       certificado.value = {
         id: null,
         id_alumno: '',
-        nombre_alumno_impresion: '',
+        nombre_impresion: '',
         id_evento: '',
         fecha_envio: currentDate(),
         firmado: "FIRMADO"

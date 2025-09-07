@@ -61,7 +61,7 @@
           <p v-else class="text-black dark:text-white">--</p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-center">
-          <button @click="downloadCertificado(certificado)"
+          <button @click="downloadCertificado(certificado.id)"
             class="text-green-500 hover:text-green-700 w-full flex items-center justify-center">
             <DownloadIcon class="h-6 w-6 text-red-500" />
           </button>
@@ -160,6 +160,22 @@ const requestToggleEstado = (id) => {
   certificadoToToggleEstado.value = id;
   isEstadoConfirmVisible.value = true;
 };
+
+const downloadCertificado = async (id) => {
+  await certificadoStore.fetchCertificadoById(id)
+
+  if (certificadoStore.result && certificadoStore.certificado && certificadoStore.certificado.filename) {
+    const filename = certificadoStore.certificado.filename;
+
+    await certificadoStore.downloadCertificadoByName(filename);
+
+    const classToast = certificadoStore.result ? 'success' : 'error';
+    storeToast.addToast(certificadoStore.message, classToast);
+  } else {
+    const errorMessage = certificadoStore.message || 'Error al obtener los detalles del certificado.';
+    storeToast.addToast(errorMessage, 'error');
+  }
+}
 
 const currentPage = computed(() => certificadoStore.pagination.currentPage);
 
