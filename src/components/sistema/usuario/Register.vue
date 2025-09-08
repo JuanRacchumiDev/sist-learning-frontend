@@ -47,7 +47,7 @@ export default {
         );
         await router.push('/account/login');
       } catch (error) {
-        console.log('error creating usuario', error);
+        console.error('error creating usuario', error);
       }
     };
 

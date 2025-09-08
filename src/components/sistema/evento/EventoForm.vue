@@ -23,8 +23,7 @@
           <div v-if="errors.titulo" class="text-red-600 text-sm mt-1">{{ errors.titulo }}</div>
         </div>
         <div class="mb-1">
-          <label for="id_instructor" class="block text-sm font-medium text-gray-700">Instructor: <span
-              class="text-red-500">*</span></label>
+          <label for="id_instructor" class="block text-sm font-medium text-gray-700">Instructor:</label>
           <select name="id_instructor" id="id_instructor" v-model="evento.id_instructor"
             class="mt-1 p-2 border border-gray-300 rounded w-full">
             <option value="">- SELECCIONE --</option>
@@ -71,33 +70,6 @@
         </div>
       </div>
 
-      <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar plantilla: <span
-            class="text-red-500">*</span></label>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          <div v-for="plantilla in plantillas" :key="plantilla.id"
-            class="border rounded p-2 hover:shadow-lg cursor-pointer transition"
-            :class="{ 'ring-2 ring-blue-500': evento.plantilla_certificado === plantilla.id }"
-            @click="selectPlantilla(plantilla)">
-            <img :src="getImagenUrl(plantilla.imagen)" :alt="plantilla.titulo"
-              class="w-full h-32 object-cover rounded mb-2" />
-            <p class="text-sm font-medium text-center text-gray-800">{{ plantilla.titulo }}</p>
-          </div>
-        </div>
-        <div v-if="errors.id_plantilla" class="text-red-600 text-sm mt-2">{{ errors.id_plantilla }}</div>
-      </div>
-
-      <!-- Modal flotante de vista previa -->
-      <div v-if="vistaPreviaPlantilla"
-        class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white p-4 rounded-md shadow-lg max-w-2xl w-full relative">
-          <button @click="vistaPreviaPlantilla = null"
-            class="absolute top-2 right-2 text-gray-500 hover:text-black text-xl font-bold">&times;</button>
-          <h2 class="text-lg font-semibold mb-4 text-center">{{ vistaPreviaPlantilla.titulo }}</h2>
-          <img :src="vistaPreviaPlantilla.imagen" :alt="vistaPreviaPlantilla.titulo"
-            class="w-full max-h-[75vh] object-contain rounded" />
-        </div>
-      </div>
       <div class="flex justify-between mt-2">
         <button type="submit"
           class="flex items-center px-4 py-2 bg-greenwhite-600 text-white rounded-md hover:bg-greenwhite-700 disabled:bg-greenwhite-300 disabled:cursor-not-allowed"
@@ -134,7 +106,6 @@ import { useRoute } from "vue-router"
 import {
   useEventoStore,
   useTipoEventoStore,
-  usePlantillaStore,
   useToastStore,
   useInstructorStore
 } from '@/stores';
@@ -143,39 +114,34 @@ export default {
   setup() {
     const evento = ref({
       id: null,
-      titulo: '',
       id_tipoevento: '',
       id_instructor: '',
+      titulo: '',
       temario: '',
       fecha_inicio: null,
       fecha_fin: null,
       duracion: '',
       modalidad: 'Virtual',
-      plantilla_certificado: null
     })
 
     const loading = ref(false)
     const isDuplicated = ref(false)
     const errors = ref({})
-    const vistaPreviaPlantilla = ref(null)
 
     const storeEvento = useEventoStore()
     const storeTipoEvento = useTipoEventoStore()
-    const storePlantilla = usePlantillaStore()
     const storeInstructor = useInstructorStore()
     const storeToast = useToastStore()
 
     const route = useRoute()
 
     const tipos = computed(() => {
-      return [...storeTipoEvento.tipos].sort((a, b) => a.nombre.localeCompare(b.nombre))
+      return [...storeTipoEvento.tipos]
     })
 
     const instructores = computed(() => {
       return [...storeInstructor.instructores]
     })
-
-    const plantillas = computed(() => storePlantilla.plantillas)
 
     const validateForm = () => {
       errors.value = {}
@@ -200,20 +166,7 @@ export default {
         errors.value.temario = 'El temario es obligatorio'
       }
 
-      if (!evento.value.plantilla_certificado) {
-        errors.value.id_plantilla = 'Seleccione una plantilla'
-      }
-
       return Object.keys(errors.value).length === 0
-    }
-
-    const selectPlantilla = (plantilla) => {
-      evento.value.plantilla_certificado = plantilla.id
-      vistaPreviaPlantilla.value = plantilla
-    }
-
-    const getImagenUrl = (filename) => {
-      return new URL(`../../../assets/images/plantillas/${filename}`, import.meta.url).href
     }
 
     const submitForm = async () => {
@@ -253,7 +206,7 @@ export default {
           isDuplicated.value = false
         }
       } catch (error) {
-        console.log('error creating evento', error);
+        console.error('error creating evento', error);
         storeToast.addToast('Falló al registrar el evento', 'error')
         isDuplicated.value = false
       } finally {
@@ -266,7 +219,7 @@ export default {
         id_tipoevento: '',
         titulo: '',
         temario: '',
-        fecha_inicio: null,
+        fecha_inicio: '',
         fecha_fin: '',
         duracion: '',
         modalidad: 'Virtual',
@@ -282,31 +235,31 @@ export default {
         titulo: '',
         temario: '',
         fecha_inicio: null,
-        fecha_fin: '',
+        fecha_fin: 'null',
         duracion: '',
         modalidad: 'Virtual',
-        plantilla_certificado: null
       };
+
       isDuplicated.value = false
     };
 
     onMounted(async () => {
       storeTipoEvento.fetchTipoEventos()
+
       storeInstructor.fetchInstructores()
 
       const eventoId = route.params.id
+
       if (eventoId) {
 
         await storeEvento.getEventoById(eventoId)
+
         evento.value = storeEvento.evento || {}
 
         if (evento.value) {
-          if (evento.value.plantilla_certificado.includes("plantillas/")) {
-            const partsPlantilla = evento.value.plantilla_certificado.split("/")
-            const partsNombrePlantilla = partsPlantilla[1].split(".")
-            evento.value.plantilla_certificado = partsNombrePlantilla[0]
-          }
+
           const partFecha = evento.value.fecha_inicio.split("T")
+
           evento.value.fecha = partFecha[0]
         }
       }
@@ -319,13 +272,9 @@ export default {
       loading,
       submitForm,
       cancelar,
-      plantillas,
-      selectPlantilla,
-      vistaPreviaPlantilla,
       errors,
       isDuplicated,
-      instructores,
-      getImagenUrl
+      instructores
     }
   }
 }

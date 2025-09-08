@@ -7,7 +7,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Buscar alumno: <span
                 class="text-red-500">*</span></label>
-            <input type="text" v-model="searchQuery" @keyup.enter="filterAlumnos" placeholder="Ej. Juan Pérez"
+            <input type="text" v-model="searchQueryAlumno" @keyup.enter="filterAlumnos" placeholder="Ej. Juan Pérez"
               class="mt-1 p-2 border border-gray-300 rounded w-full" />
             <div v-if="filteredAlumnos.length > 0"
               class="mt-2 bg-white border border-gray-300 rounded max-h-60 overflow-y-auto">
@@ -20,25 +20,10 @@
             </div>
             <div v-if="errors.id_alumno" class="text-red-600 text-sm mt-1">{{ errors.id_alumno }}</div>
           </div>
+          <!-- -->
 
-          <!-- Buscar evento -->
           <div>
-            <label class="block text-sm font-medium text-gray-700">Seleccionar evento: <span
-                class="text-red-500">*</span></label>
-            <select v-model="certificado.id_evento" class="mt-1 p-2 border border-gray-300 rounded w-full">
-              <option value="">- SELECCIONE -</option>
-              <option v-for="evento in eventos" :value="evento.id" :key="evento.id">
-                {{ evento.titulo }}
-              </option>
-            </select>
-            <div v-if="errors.id_evento" class="text-red-600 text-sm mt-1">{{ errors.id_evento }}</div>
-          </div>
-        </div>
-
-        <!-- Columna derecha: información adicional -->
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Nombre alumno (para impresión): <span
+            <label class="block text-sm font-medium text-gray-700">Nombre (para impresión): <span
                 class="text-red-500">*</span></label>
             <input v-model="certificado.nombre_impresion" type="text" placeholder="Ej. Juan Pérez Rodríguez"
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
@@ -46,6 +31,7 @@
             <div v-if="errors.nombre_impresion" class="text-red-600 text-sm mt-1">{{
               errors.nombre_impresion }}</div>
           </div>
+
           <div>
             <label class="block text-sm font-medium text-gray-700">Fecha de emisión: <span
                 class="text-red-500">*</span></label>
@@ -53,19 +39,47 @@
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
             <div v-if="errors.fecha_envio" class="text-red-600 text-sm mt-1">{{ errors.fecha_envio }}</div>
           </div>
+        </div>
+
+        <!-- Columna derecha: información adicional -->
+        <div class="space-y-4">
+          <!-- Buscar evento -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Firmado PERUAGRO:</label>
-            <div class="flex items-center space-x-4">
-              <label class="inline-flex items-center">
-                <input type="radio" v-model="certificado.firmado" value="FIRMADO" class="form-radio text-green-600">
-                <span class="ml-2">Firmado</span>
-              </label>
-              <label class="inline-flex items-center">
-                <input type="radio" v-model="certificado.firmado" value="NO FIRMADO" class="form-radio text-red-600">
-                <span class="ml-2">No Firmado</span>
-              </label>
+            <label class="block text-sm font-medium text-gray-700">Buscar evento: <span
+                class="text-red-500">*</span></label>
+            <input type="text" v-model="searchQueryEvento" @keyup.enter="filterEventos"
+              placeholder="Ej. Crianza de cuyes" class="mt-1 p-2 border border-gray-300 rounded w-full" />
+            <div v-if="filteredEventos.length > 0"
+              class="mt-2 bg-white border border-gray-300 rounded max-h-60 overflow-y-auto">
+              <ul>
+                <li v-for="evento in filteredEventos" :key="evento.id" @click="selectEvento(evento)"
+                  class="p-2 hover:bg-gray-200 cursor-pointer">
+                  {{ evento.titulo }}
+                </li>
+              </ul>
             </div>
-            <div v-if="errors.firmado" class="text-red-600 text-sm mt-1">{{ errors.firmado }}</div>
+            <div v-if="errors.id_evento" class="text-red-600 text-sm mt-1">{{ errors.id_evento }}</div>
+          </div>
+          <!---->
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Evento seleccionado: <span
+                class="text-red-500">*</span></label>
+            <input v-model="certificado.nombre_evento" type="text" placeholder="Ej. Crianza de cuyes"
+              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+              maxlength="100" disabled />
+          </div>
+
+          <div v-if="certificado.id_evento && plantillas.length > 0">
+            <label class="block text-sm font-medium text-gray-700">Seleccionar plantilla: <span
+                class="text-red-500">*</span></label>
+            <select v-model="certificado.id_plantilla" class="mt-1 p-2 border border-gray-300 rounded w-full">
+              <option value="">- SELECCIONE -</option>
+              <option v-for="plantilla in plantillas" :value="plantilla.id" :key="plantilla.id">
+                {{ plantilla.nombre }}
+              </option>
+            </select>
+            <div v-if="errors.id_plantilla" class="text-red-600 text-sm mt-1">{{ errors.id_plantilla }}</div>
           </div>
         </div>
       </div>
@@ -97,12 +111,13 @@
 </template>
 
 <script>
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { useRoute } from "vue-router"
 import {
   useAlumnoStore,
   useEventoStore,
   useCertificadoStore,
+  usePlantillaStore,
   useToastStore
 } from "@/stores"
 import { currentDate, formatDateForInput } from "@/utils/date.utils";
@@ -113,38 +128,63 @@ export default {
       id: null,
       id_alumno: '',
       id_evento: '',
-      id_plantilla: 1,
+      id_plantilla: '',
       nombre_impresion: '',
+      nombre_evento: '',
       fecha_envio: currentDate(),
-      firmado: "FIRMADO"
     });
 
     const storeCertificado = useCertificadoStore();
     const storeAlumno = useAlumnoStore();
     const storeEvento = useEventoStore();
+    const storePlantilla = usePlantillaStore();
     const storeToast = useToastStore();
     const route = useRoute()
 
     const alumnos = computed(() => storeAlumno.alumnos)
 
-    // const eventos = computed(() => {
-    //   return [...storeEvento.eventos].sort((a, b) => a.titulo.localeCompare(b.titulo))
-    // })
-
     const eventos = computed(() => storeEvento.eventos)
 
-    const searchQuery = ref('')
+    const searchQueryAlumno = ref('')
+
+    const searchQueryEvento = ref('')
+
     const loading = ref(false)
+
     const isNombreAlumnoDisabled = ref(true)
+
     const errors = ref({})
 
-    const templateError = ref(false);
+    const plantillas = computed(() => storePlantilla.plantillas)
+
+    const showTemplateDropdown = ref(false)
+
+    // Watcher para obtener plantillas cuando se selecciona un evento
+    watch(() => certificado.value.id_evento, (newId, oldId) => {
+      if (newId) {
+        storePlantilla.getPlantillasByEvento(newId);
+        showTemplateDropdown.value = true;
+      } else {
+        // Limpia las plantillas si no hay evento seleccionado
+        storePlantilla.plantillas = [];
+        certificado.value.id_plantilla = '';
+        showTemplateDropdown.value = false;
+      }
+    });
 
     const filteredAlumnos = computed(() => {
       return alumnos.value.filter((alumno) => {
         return `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`
           .toLowerCase()
-          .includes(searchQuery.value.toLowerCase().trim());
+          .includes(searchQueryAlumno.value.toLowerCase().trim());
+      });
+    });
+
+    const filteredEventos = computed(() => {
+      return eventos.value.filter((evento) => {
+        return `${evento.titulo}`
+          .toLowerCase()
+          .includes(searchQueryEvento.value.toLowerCase().trim());
       });
     });
 
@@ -160,15 +200,15 @@ export default {
       }
 
       if (!certificado.value.nombre_impresion || certificado.value.nombre_impresion.trim() === '') {
-        errors.value.nombre_impresion = 'El nombre del alumno es obligatorio'
+        errors.value.nombre_impresion = 'El nombre de impresión es obligatorio'
       }
 
       if (!certificado.value.fecha_envio) {
         errors.value.fecha_envio = 'Seleccione una fecha'
       }
 
-      if (!certificado.value.firmado || certificado.value.firmado.trim() === '') {
-        errors.value.firmado = 'Seleccione una opción de firma'
+      if (certificado.value.id_evento && !certificado.value.id_plantilla) {
+        errors.value.id_plantilla = 'Seleccione una plantilla'
       }
 
       return Object.keys(errors.value).length === 0
@@ -178,14 +218,28 @@ export default {
       filteredAlumnos.value = alumnos.value;
     };
 
+    const loadEventos = () => {
+      filteredEventos.value = eventos.value
+    }
+
     const filterAlumnos = () => {
-      if (searchQuery.value.trim() === '') {
+      if (searchQueryAlumno.value.trim() === '') {
         filteredAlumnos.value = alumnos.value;
       } else {
         filteredAlumnos.value = alumnos.value.filter((alumno) => {
           `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`
             .toLowerCase()
-            .includes(searchQuery.value.toLowerCase().trim());
+            .includes(searchQueryAlumno.value.toLowerCase().trim());
+        });
+      }
+    };
+
+    const filterEventos = () => {
+      if (searchQueryEvento.value.trim() === '') {
+        filteredEventos.value = eventos.value;
+      } else {
+        filteredEventos.value = eventos.value.filter((evento) => {
+          `${evento.titulo}`.toLowerCase().includes(searchQueryEvento.value.toLowerCase().trim());
         });
       }
     };
@@ -193,19 +247,28 @@ export default {
     const selectAlumno = (alumno) => {
       certificado.value.id_alumno = alumno.id;
       certificado.value.nombre_impresion = `${alumno.nombres.trim()} ${alumno.apellido_paterno.trim()} ${alumno.apellido_materno.trim()}`;
-      searchQuery.value = ''; // Limpiar la búsqueda
+      searchQueryAlumno.value = ''; // Limpiar la búsqueda
+    };
+
+    const selectEvento = (evento) => {
+      certificado.value.id_evento = evento.id;
+      certificado.value.nombre_evento = evento.titulo;
+      searchQueryEvento.value = ''; // Limpiar la búsqueda
     };
 
     onMounted(async () => {
       storeAlumno.fetchAlumnos();
       storeEvento.fetchEventos();
+
       loadAlumnos();
+      loadEventos();
+
       storeCertificado.message = ""
 
       const certificadoId = route.params.id
 
       if (certificadoId) {
-        await storeCertificado.getCertificadoById(certificadoId)
+        await storeCertificado.fetchCertificadoById(certificadoId)
 
         if (storeCertificado.certificado) {
           certificado.value = storeCertificado.certificado
@@ -223,12 +286,9 @@ export default {
       if (!validateForm()) return
 
       try {
-        templateError.value = false;
         loading.value = true; // Activar el spinner
 
         certificado.value.nombre_impresion = certificado.value.nombre_impresion.trim()
-
-        certificado.value.firmado = (certificado.value.firmado === 'FIRMADO') ? true : false
 
         if (certificado.value.id) {
           await storeCertificado.updateCertificado(
@@ -240,22 +300,13 @@ export default {
 
           storeToast.addToast(storeCertificado.message, classToast)
         } else {
-          await storeAlumno.getAlumnoById(
-            certificado.value.id_alumno
-          );
-
-          if (storeAlumno.alumno) {
-            certificado.value.alumno = storeAlumno.alumno
-            await storeCertificado.createCertificado(certificado.value)
-            const classToast = (storeCertificado.result) ? 'success' : 'error'
-            storeToast.addToast(storeCertificado.message, classToast)
-            if (storeCertificado.result) resetForm()
-          } else {
-            storeToast.addToast(storeAlumno.message, 'error')
-          }
+          await storeCertificado.createCertificado(certificado.value)
+          const classToast = (storeCertificado.result) ? 'success' : 'error'
+          storeToast.addToast(storeCertificado.message, classToast)
+          if (storeCertificado.result) resetForm()
         }
       } catch (error) {
-        console.log('error creating certificado', error);
+        console.error('error creating certificado', error);
         storeToast.addToast(storeAlumno.message, 'error')
       } finally {
         loading.value = false; // Desactivar el spinner
@@ -265,11 +316,10 @@ export default {
     const cancelar = () => {
       certificado.value = {
         id_alumno: '',
-        nombre_impresion: '',
         id_evento: '',
-        id_plantilla: 1,
-        fecha_envio: currentDate(),
-        firmado: "FIRMADO"
+        id_plantilla: '',
+        nombre_impresion: '',
+        fecha_envio: currentDate()
       };
 
       isNombreAlumnoDisabled.value = true;
@@ -279,10 +329,10 @@ export default {
       certificado.value = {
         id: null,
         id_alumno: '',
-        nombre_impresion: '',
         id_evento: '',
-        fecha_envio: currentDate(),
-        firmado: "FIRMADO"
+        id_plantilla: '',
+        nombre_impresion: '',
+        fecha_envio: currentDate()
       };
 
       isNombreAlumnoDisabled.value = true;
@@ -295,13 +345,18 @@ export default {
       submitForm,
       isNombreAlumnoDisabled,
       loading,
-      searchQuery,
+      searchQueryAlumno,
+      searchQueryEvento,
       filteredAlumnos,
       filterAlumnos,
       selectAlumno,
-      templateError,
+      filteredEventos,
+      filterEventos,
+      selectEvento,
       cancelar,
-      errors
+      errors,
+      plantillas,
+      showTemplateDropdown
     }
   }
 }

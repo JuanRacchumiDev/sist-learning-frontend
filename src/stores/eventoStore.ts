@@ -28,18 +28,17 @@ export const useEventoStore = defineStore('eventoStore', {
 
             try {
                 const response = await api.get('/evento')
-
-                const { data: dataEventos } = response
-
-                const { result, data } = dataEventos
+                const { data } = response
+                const { result } = data
 
                 if (result) {
                     this.result = result
+                    const eventos = data.data
 
                     if (estado) {
-                        this.eventos = data.filter((evento: IEvento) => evento.estado === estado)
+                        this.eventos = eventos.filter((evento: IEvento) => evento.estado === estado)
                     } else {
-                        this.eventos = data
+                        this.eventos = eventos
                     }
                 }
             } catch (error) {

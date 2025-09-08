@@ -182,7 +182,12 @@ export const useCertificadoStore = defineStore('certificadoStore', {
             }
         },
         async createCertificado(certificado: ICertificado) {
+            this.loading = true;
+            this.message = '';
+            this.result = false;
             try {
+                const { id_alumno } = certificado
+
                 const response = await api.post(`/certificado`, certificado, {
                     responseType: 'blob'
                 })
@@ -190,31 +195,39 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 const { status, data } = response
 
                 if (status === 200) {
+                    // Crear una URL temporal para el blob y forzar la descarga
+                    const url = window.URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
+
+                    // Obtener alumno
+                    const response = await api.get(`/alumno/${id_alumno}`)
+
+                    const { data: dataAlumno } = response
+
+                    const { data: { nombre_capitalized } } = dataAlumno;
+
+                    const nombreCompleto = nombre_capitalized as string;
+
+                    const sanitizedAlumno = sanitizeFileName(nombreCompleto);
+
+                    const fileName = `certificado_${sanitizedAlumno}.pdf`;
+
+                    const link = document.createElement('a');
+
+                    link.href = url;
+
+                    link.setAttribute('download', fileName);
+
+                    document.body.appendChild(link);
+
+                    link.click();
+
+                    link.remove();
+
+                    // Liberar la URL del blob para ahorrar memoria
+                    window.URL.revokeObjectURL(url);
+
                     this.result = true
-                    this.message = "Certificado registrado correctamente"
-                    this.certificados.push(certificado)
-
-                    const { alumno } = certificado
-
-                    const dataAlumno = alumno as IAlumno
-
-                    const { nombre_capitalized } = dataAlumno
-
-                    const nombreCompleto = nombre_capitalized as string
-
-                    const sanitizedAlumno = sanitizeFileName(nombreCompleto)
-
-                    const fileName = `certificado_${sanitizedAlumno}.pdf`
-
-                    const url = window.URL.createObjectURL(new Blob([data]))
-
-                    const link = document.createElement('a')
-
-                    link.href = url
-                    link.setAttribute('download', fileName)
-                    document.body.appendChild(link)
-                    link.click()
-                    link.remove()
+                    this.message = 'Certificado generado correctamente'
                 } else {
                     this.result = false
                     this.message = 'Error al crear el certificado'
