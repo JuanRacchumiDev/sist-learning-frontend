@@ -134,6 +134,8 @@ export default {
       fecha_envio: currentDate(),
     });
 
+    const idTipoEvento = ref(0)
+
     const storeCertificado = useCertificadoStore();
     const storeAlumno = useAlumnoStore();
     const storeEvento = useEventoStore();
@@ -161,8 +163,18 @@ export default {
 
     // Watcher para obtener plantillas cuando se selecciona un evento
     watch(() => certificado.value.id_evento, (newId, oldId) => {
+      // console.log('id_evento', certificado.value.id_evento)
+      // console.log('idTipoEvento', idTipoEvento.value)
+
       if (newId) {
-        storePlantilla.getPlantillasByEvento(newId);
+        if (idTipoEvento.value === 0) {
+          // console.log('aaa')
+          storePlantilla.getPlantillasByEvento(newId);
+        } else {
+          // console.log('bbb')
+          storePlantilla.getPlantillasByTipoEventoOrEvento(newId, idTipoEvento.value);
+        }
+
         showTemplateDropdown.value = true;
       } else {
         // Limpia las plantillas si no hay evento seleccionado
@@ -251,8 +263,10 @@ export default {
     };
 
     const selectEvento = (evento) => {
+      // console.log('selectEvento', evento)
       certificado.value.id_evento = evento.id;
       certificado.value.nombre_evento = evento.titulo;
+      idTipoEvento.value = evento.id_tipoevento
       searchQueryEvento.value = ''; // Limpiar la búsqueda
     };
 
@@ -272,6 +286,8 @@ export default {
 
         if (storeCertificado.certificado) {
           certificado.value = storeCertificado.certificado
+          const nombreEvento = storeCertificado.certificado.evento.titulo
+          certificado.value.nombre_evento = nombreEvento
 
           const { fecha_envio } = storeCertificado.certificado
 

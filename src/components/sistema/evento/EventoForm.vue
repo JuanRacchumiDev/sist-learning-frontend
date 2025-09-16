@@ -177,12 +177,16 @@ export default {
 
       try {
 
-        await storeEvento.getEventoByTitulo(evento.value.titulo.trim())
+        if (!evento.value.id) {
+          await storeEvento.getEventoByTitulo(evento.value.titulo.trim())
 
-        if (storeEvento.evento) {
-          storeToast.addToast('El evento ya existe', 'warning')
-          isDuplicated.value = false
-          return
+          if (storeEvento.evento) {
+            if (storeEvento.evento.titulo.toLowerCase().trim() === evento.value.titulo.toLocaleLowerCase().trim()) {
+              storeToast.addToast('El evento ya existe', 'warning')
+              isDuplicated.value = true
+              return
+            }
+          }
         }
 
         evento.value.titulo = evento.value.titulo.trim()
