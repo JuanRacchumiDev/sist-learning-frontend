@@ -145,6 +145,33 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 console.error('Error fetching certificado metadata:', error);
             }
         },
+        async fetchCertificadoByCodigo(codigo: string) {
+            this.loading = true
+            this.error = null
+
+            try {
+                const response = await api.get(`/certificado/codigo/${codigo}`)
+
+                const { data: dataCertificado } = response
+
+                const { data, message, result, status, error } = dataCertificado
+
+                if (result && status === 200) {
+                    this.certificado = data as ICertificado
+                    this.message = message || "Certificado obtenido correctamente"
+                    this.result = true
+                } else {
+                    this.message = message || error || 'Error desconocido'
+                    this.certificado = null
+                    this.result = false
+                }
+            } catch (error) {
+                this.result = false
+                this.message = "Error al obtener el certificado"
+                this.error = error instanceof Error ? error.message : 'Error desconocido'
+                console.error('Error fetching certificado metadata:', error);
+            }
+        },
         async downloadCertificadoByName(filename: string) {
             this.loading = true
             this.error = null
