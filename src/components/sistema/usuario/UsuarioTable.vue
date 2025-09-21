@@ -54,6 +54,9 @@
           {{ usuario.id }}
         </div>
         -->
+        <pre>
+          {{ usuario }}
+        </pre>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
           <p v-if="usuario?.perfil?.nombre === 'Estudiante'">{{ usuario.alumno.apellido_paterno }} {{
             usuario.alumno.apellido_materno }} {{ usuario.alumno.nombres }}</p>
@@ -66,7 +69,7 @@
           <p class="text-black dark:text-white text-center w-full">{{ usuario.username }}</p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-center">
-          <p class="text-black dark:text-white text-center w-full">{{ usuario?.Perfil?.nombre }}</p>
+          <p class="text-black dark:text-white text-center w-full">{{ usuario?.perfil?.nombre }}</p>
         </div>
         <div class="items-center justify-center p-2.5 sm:flex xl:p-5">
           <button @click="requestToggleEstado(usuario.id)"

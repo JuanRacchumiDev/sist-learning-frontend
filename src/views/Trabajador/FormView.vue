@@ -1,6 +1,6 @@
 <template>
     <DefaultLayout>
-        <BreadcrumbDefault :pageTitle="pageTitle" :urlCurrentName="urlCurrentName" :options="options"/>
+        <BreadcrumbDefault :pageTitle="pageTitle" :urlCurrentName="urlCurrentName" :options="options" />
         <div class="flex justify-center items-center">
             <div class="w-full max-w-3xl">
                 <DefaultCard :cardTitle="cardTitle">
@@ -36,10 +36,10 @@ export default {
 
         const options = ref(
             [
-                {
-                    'url': '/',
-                    'title': 'Dashboard'
-                },
+                // {
+                //     'url': '/',
+                //     'title': 'Dashboard'
+                // },
                 {
                     'url': '/trabajador',
                     'title': 'Trabajador'
@@ -51,7 +51,7 @@ export default {
             const trabajadorId = route.params.id
             if (trabajadorId) {
                 pageTitle.value = "Editar trabajador",
-                cardTitle.value = "Formulario de actualización"
+                    cardTitle.value = "Formulario de actualización"
             }
         })
 

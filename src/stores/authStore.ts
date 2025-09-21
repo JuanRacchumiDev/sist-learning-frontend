@@ -70,7 +70,7 @@ export const useAuthStore = defineStore({
 
                     const urlRedireccion = (slug_perfil === 'estudiante' || slug_perfil === 'instructor')
                         ? '/certificado'
-                        : '/dashboard'
+                        : '/evento'
 
                     this.message = message
                     localStorage.setItem('auth', JSON.stringify(dataLogin))

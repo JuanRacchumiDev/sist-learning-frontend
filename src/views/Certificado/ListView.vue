@@ -20,7 +20,7 @@ import { useCertificadoStore } from "@/stores"
 const certificadorStore = useCertificadoStore()
 
 const pageTitle = ref("Listado")
-const urlCurrentName = ref("Alumno")
+const urlCurrentName = ref("Certificado")
 
 const pagination = computed(() => certificadorStore.pagination)
 

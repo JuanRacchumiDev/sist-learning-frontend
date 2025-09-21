@@ -36,10 +36,10 @@ export default {
 
         const options = ref(
             [
-                {
-                    'url': '/dashboard',
-                    'title': 'Dashboard'
-                },
+                // {
+                //     'url': '/dashboard',
+                //     'title': 'Dashboard'
+                // },
                 {
                     'url': '/tipo-evento',
                     'title': 'Tipo de evento'

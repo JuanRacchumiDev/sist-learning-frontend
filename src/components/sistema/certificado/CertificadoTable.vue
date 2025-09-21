@@ -35,7 +35,6 @@
         <div class="p-2.5 xl:p-5">
           <h5 class="text-xs font-medium uppercase xsm:text-sm">Acciones</h5>
         </div>
-
       </div>
 
       <div v-if="certificados.length === 0" class="flex justify-center py-6 text-gray-500 dark:text-gray-300 text-xs">
@@ -97,6 +96,13 @@
                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
                 Editar
               </router-link>
+
+              <label for="file-upload"
+                class="w-full block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer">
+                Subir Certificado
+              </label>
+              <input type="file" id="file-upload" class="hidden" @change="handleFileUpload($event, certificado)" />
+
               <button @click="() => { requestDeleteCertificado(certificado.id); dropdownVisibleId = null }"
                 class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
                 Eliminar
@@ -120,7 +126,7 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useCertificadoStore, useToastStore } from '@/stores';
 import ConfirmDialog from "@/components/Common/ConfirmDialog.vue";
-import { DownloadIcon } from "@heroicons/vue/outline"
+import { DownloadIcon, UploadIcon } from "@heroicons/vue/outline"
 import { formatDate } from '@/utils/date.utils'
 
 const certificadoStore = useCertificadoStore();
@@ -206,6 +212,25 @@ const deleteCertificado = async () => {
     certificadoToDelete.value = null;
     fetchCertificados(currentPage.value, searchInput.value.trim()); // Refrescar la tabla con la página actual
   }
+};
+
+const handleFileUpload = async (event, certificado) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Lógica para subir el archivo
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('id_alumno', certificado.id_alumno);
+  formData.append('id_evento', certificado.id_evento);
+  // formData.append('id_tipocertificado', certificado.id_tipocertificado); // Ojo: necesitas este campo en tus datos de la tabla
+
+  dropdownVisibleId.value = null; // Cerrar el dropdown después de la selección
+
+  await certificadoStore.uploadCertificado(formData);
+
+  const classToast = certificadoStore.result ? 'success' : 'error';
+  storeToast.addToast(certificadoStore.message, classToast);
 };
 
 onMounted(() => {

@@ -372,6 +372,34 @@ export const useCertificadoStore = defineStore('certificadoStore', {
 
                 console.error('Error deleting certificado: ', error)
             }
+        },
+        async uploadCertificado(file: FormData) {
+            this.loading = true
+            this.result = false
+            this.message = ""
+
+            try {
+                const response = await api.post('/certificado-upload', file, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+
+                const { data } = response
+
+                const { result, message } = data
+
+                if (result) {
+                    this.result = result
+                    this.message = message
+                } else {
+                    this.message = message || data.error || 'Error desconocido'
+                }
+            } catch (error) {
+                this.result = false
+                this.message = "Error al crear el certificado"
+                console.error('Error creating certificado', error)
+            }
         }
     }
 })

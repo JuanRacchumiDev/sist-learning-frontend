@@ -36,10 +36,10 @@ export default {
 
         const options = ref(
             [
-                {
-                    'url': '/',
-                    'title': 'Dashboard'
-                },
+                // {
+                //     'url': '/',
+                //     'title': 'Dashboard'
+                // },
                 {
                     'url': '/evento',
                     'title': 'Evento'
@@ -51,7 +51,7 @@ export default {
             const eventoId = route.params.id
             if (eventoId) {
                 pageTitle.value = "Editar evento",
-                cardTitle.value = "Formulario de actualización"
+                    cardTitle.value = "Formulario de actualización"
             }
         })
 

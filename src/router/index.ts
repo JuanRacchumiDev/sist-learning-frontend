@@ -21,7 +21,7 @@ const rootRoute = {
     path: '/',
     redirect: () => {
         const auth = localStorage.getItem('auth')
-        return auth ? '/dashboard' : '/login'
+        return auth ? '/certificado' : '/login'
     }
 }
 
