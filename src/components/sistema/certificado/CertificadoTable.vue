@@ -60,7 +60,7 @@
           <p v-else class="text-black dark:text-white">--</p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-center">
-          <button @click="downloadCertificado(certificado.id)"
+          <button @click="downloadCertificado(certificado.id_alumno, certificado.id_evento)"
             class="text-green-500 hover:text-green-700 w-full flex items-center justify-center">
             <DownloadIcon class="h-6 w-6 text-red-500" />
           </button>
@@ -97,17 +97,62 @@
                 Editar
               </router-link>
 
+              <!--
               <label for="file-upload"
                 class="w-full block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer">
                 Subir Certificado
               </label>
               <input type="file" id="file-upload" class="hidden" @change="handleFileUpload($event, certificado)" />
+            -->
+
+              <button @click="openUploadModal(certificado)"
+                class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer">
+                Subir Certificado
+              </button>
 
               <button @click="() => { requestDeleteCertificado(certificado.id); dropdownVisibleId = null }"
                 class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
                 Eliminar
               </button>
             </div>
+
+            <div v-if="isUploadModalVisible"
+              class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+              <div class="bg-white dark:bg-boxdark rounded-lg shadow-xl p-6 w-full max-w-lg mx-4">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Subir Certificado y Código
+                </h3>
+
+                <div class="mb-4">
+                  <label for="file-upload-modal" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Archivo PDF *
+                  </label>
+                  <input type="file" id="file-upload-modal" @change="onFileChange"
+                    class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" />
+                </div>
+
+                <div class="mb-6">
+                  <label for="codigo-certificado-input"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Código de Certificado (Opcional)
+                  </label>
+                  <input type="text" id="codigo-certificado-input" v-model="uploadForm.codigo"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                </div>
+
+                <div class="flex justify-end gap-2">
+                  <button @click="closeUploadModal"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Cancelar
+                  </button>
+                  <button @click="uploadAndOpenCertificado" :disabled="!uploadForm.file"
+                    class="px-4 py-2 text-sm font-medium text-white rounded-md bg-greenwhite-600 hover:bg-greenwhite-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Subir y Abrir
+                  </button>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -144,6 +189,28 @@ const certificadoToDelete = ref(null);
 const isEstadoConfirmVisible = ref(false);
 const certificadoToToggleEstado = ref(null);
 
+const isUploadModalVisible = ref(false);
+const certificadoToUpload = ref(null);
+const uploadForm = ref({
+  file: null,
+  codigo: ''
+});
+
+const openUploadModal = (certificado) => {
+  certificadoToUpload.value = certificado;
+  isUploadModalVisible.value = true;
+  dropdownVisibleId.value = null; // Cierra el dropdown
+};
+
+const closeUploadModal = () => {
+  isUploadModalVisible.value = false;
+  uploadForm.value = { file: null, codigo: '' }; // Limpia el formulario
+};
+
+const onFileChange = (event) => {
+  uploadForm.value.file = event.target.files[0];
+};
+
 const fetchCertificados = async (page = 1, query = '') => {
   await certificadoStore.fetchCertificados({ page, query });
 };
@@ -167,14 +234,18 @@ const requestToggleEstado = (id) => {
   isEstadoConfirmVisible.value = true;
 };
 
-const downloadCertificado = async (id) => {
-  await certificadoStore.fetchCertificadoById(id)
+const downloadCertificado = async (id_alumno, id_evento) => {
+  await certificadoStore.fetchCertificadoByAlumnoByEvento(id_alumno, id_evento)
+  // console.log('certificadoStore.result', certificadoStore.result)
+  // console.log('certificadoStore.certificado', certificadoStore.certificado)
 
-  if (certificadoStore.result && certificadoStore.certificado && certificadoStore.certificado.filename) {
-    const filename = certificadoStore.certificado.filename;
-
-    await certificadoStore.downloadCertificadoByName(filename);
-
+  if (certificadoStore.result && certificadoStore.certificado) {
+    if (certificadoStore.certificado.file_name) {
+      certificadoStore.certificado.filename = certificadoStore.certificado.file_name
+    }
+    const filename = certificadoStore.certificado.filename
+    // console.log({ filename })
+    await certificadoStore.downloadCertificadoByName(filename)
     const classToast = certificadoStore.result ? 'success' : 'error';
     storeToast.addToast(certificadoStore.message, classToast);
   } else {
@@ -182,6 +253,24 @@ const downloadCertificado = async (id) => {
     storeToast.addToast(errorMessage, 'error');
   }
 }
+
+// const downloadCertificado = async (id) => {
+//   console.log('id certificado', id)
+
+//   await certificadoStore.fetchCertificadoById(id)
+
+//   if (certificadoStore.result && certificadoStore.certificado && certificadoStore.certificado.filename) {
+//     const filename = certificadoStore.certificado.filename;
+
+//     await certificadoStore.downloadCertificadoByName(filename);
+
+//     const classToast = certificadoStore.result ? 'success' : 'error';
+//     storeToast.addToast(certificadoStore.message, classToast);
+//   } else {
+//     const errorMessage = certificadoStore.message || 'Error al obtener los detalles del certificado.';
+//     storeToast.addToast(errorMessage, 'error');
+//   }
+// }
 
 const currentPage = computed(() => certificadoStore.pagination.currentPage);
 
@@ -214,24 +303,58 @@ const deleteCertificado = async () => {
   }
 };
 
-const handleFileUpload = async (event, certificado) => {
-  const file = event.target.files[0];
-  if (!file) return;
+// const handleFileUpload = async (event, certificado) => {
+//   const file = event.target.files[0];
+//   if (!file) return;
 
-  // Lógica para subir el archivo
+//   // Lógica para subir el archivo
+//   const formData = new FormData();
+//   formData.append('file', file);
+//   formData.append('id_alumno', certificado.id_alumno);
+//   formData.append('id_evento', certificado.id_evento);
+//   // formData.append('id_tipocertificado', certificado.id_tipocertificado); // Ojo: necesitas este campo en tus datos de la tabla
+
+//   dropdownVisibleId.value = null; // Cerrar el dropdown después de la selección
+
+//   await certificadoStore.uploadCertificado(formData);
+
+//   const classToast = certificadoStore.result ? 'success' : 'error';
+//   storeToast.addToast(certificadoStore.message, classToast);
+// };
+
+const uploadAndOpenCertificado = async () => {
+  if (!uploadForm.value.file || !certificadoToUpload.value) {
+    storeToast.addToast('Por favor, selecciona un archivo PDF.', 'error');
+    return;
+  }
+
   const formData = new FormData();
-  formData.append('file', file);
-  formData.append('id_alumno', certificado.id_alumno);
-  formData.append('id_evento', certificado.id_evento);
-  // formData.append('id_tipocertificado', certificado.id_tipocertificado); // Ojo: necesitas este campo en tus datos de la tabla
+  formData.append('file', uploadForm.value.file);
+  formData.append('id_alumno', certificadoToUpload.value.id_alumno);
+  formData.append('id_evento', certificadoToUpload.value.id_evento);
+  formData.append('codigo', uploadForm.value.codigo); // Añade el campo de código
 
-  dropdownVisibleId.value = null; // Cerrar el dropdown después de la selección
+  // Ojo: Asegúrate de tener este campo en tus datos si es necesario
+  // formData.append('id_tipocertificado', certificadoToUpload.value.id_tipocertificado);
 
   await certificadoStore.uploadCertificado(formData);
 
   const classToast = certificadoStore.result ? 'success' : 'error';
   storeToast.addToast(certificadoStore.message, classToast);
+
+  // if (certificadoStore.result) {
+  //   // Si la subida fue exitosa, abre el PDF en una nueva ventana
+  //   openPdfInNewWindow(certificadoStore.message); // El mensaje ahora contendrá el nombre del archivo
+  // }
+
+  closeUploadModal();
 };
+
+// const openPdfInNewWindow = (filename) => {
+//   // Asume que tu backend tiene un endpoint para servir los archivos
+//   const url = `${import.meta.env.VITE_API_URL}/certificados/view/${filename}`;
+//   window.open(url, '_blank');
+// };
 
 onMounted(() => {
   window.addEventListener('click', handleClickOutside);

@@ -54,9 +54,6 @@
           {{ usuario.id }}
         </div>
         -->
-        <pre>
-          {{ usuario }}
-        </pre>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
           <p v-if="usuario?.perfil?.nombre === 'Estudiante'">{{ usuario.alumno.apellido_paterno }} {{
             usuario.alumno.apellido_materno }} {{ usuario.alumno.nombres }}</p>

@@ -118,6 +118,69 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 this.loading = false
             }
         },
+        async fetchCertificadoByAlumnoByEvento(id_alumno: number, id_evento: number) {
+            this.loading = true
+            this.error = null
+
+            try {
+                const responseCertificadoUpload = await api.get('/certificado-upload/busqueda', {
+                    params: {
+                        id_alumno,
+                        id_evento
+                    }
+                })
+
+                const { data: dataCertificadoUpload } = responseCertificadoUpload
+
+                const {
+                    result: resultUpload,
+                    data: dataUpload,
+                    message: messageUpload,
+                } = dataCertificadoUpload
+
+                if (resultUpload && dataUpload) {
+                    // console.log('aaa')
+                    this.certificado = dataUpload as ICertificado
+                    this.message = messageUpload || "Certificado subido obtenido correctamente"
+                    this.result = true
+                } else {
+                    // console.log('bbb')
+                    const response = await api.get('/certificado/busqueda', {
+                        params: {
+                            id_alumno,
+                            id_evento
+                        }
+                    })
+
+                    const { data: dataCertificado } = response
+
+                    const {
+                        result,
+                        data,
+                        message,
+                        error
+                    } = dataCertificado
+
+                    if (result && data) {
+                        // console.log('ccc')
+                        this.certificado = data as ICertificado
+                        this.message = message || "Certificado obtenido correctamente"
+                        this.result = true
+                    } else {
+                        // console.log('ddd')
+                        this.message = message || error || 'Error desconocido'
+                        this.certificado = null
+                        this.result = false
+                    }
+                }
+            } catch (error) {
+                // console.log('show error')
+                this.result = false
+                this.message = "Error al obtener el certificado subido"
+                this.error = error instanceof Error ? error.message : 'Error desconocido'
+                console.error('Error fetching certificado subido metadata:', error);
+            }
+        },
         async fetchCertificadoById(id: number) {
             this.loading = true
             this.error = null
@@ -170,6 +233,42 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 this.message = "Error al obtener el certificado"
                 this.error = error instanceof Error ? error.message : 'Error desconocido'
                 console.error('Error fetching certificado metadata:', error);
+            }
+        },
+        async downloadCertificadoUploadByName(filename: string) {
+            this.loading = true
+            this.error = null
+
+            try {
+                const urlApi = `/certificado-upload/download/name/${filename}`;
+
+                const response = await api.get(urlApi, {
+                    responseType: 'blob'
+                });
+
+                const { status, data } = response;
+
+                if (status === 200) {
+                    this.result = true;
+                    this.message = 'Certificado descargado correctamente';
+
+                    const url = window.URL.createObjectURL(new Blob([data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                } else {
+                    this.result = false;
+                    this.message = 'Error al descargar el certificado';
+                }
+            } catch (error) {
+                this.result = false;
+                this.message = 'Error al descargar el certificado';
+                console.error('Error downloading certificate by name:', error);
+            } finally {
+                this.loading = false;
             }
         },
         async downloadCertificadoByName(filename: string) {
