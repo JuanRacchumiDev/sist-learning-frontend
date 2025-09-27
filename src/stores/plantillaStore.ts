@@ -56,8 +56,8 @@ export const usePlantillaStore = defineStore('plantillaStore', {
                 let listPlantillas: IPlantilla[] = []
 
                 const responseForEvento = await api.get(`/plantilla/evento/${idEvento}`)
+
                 const { data: dataPlantillasForEvento } = responseForEvento
-                // console.log({ dataPlantillasForEvento })
 
                 const {
                     result: resultForEvento,
@@ -68,8 +68,8 @@ export const usePlantillaStore = defineStore('plantillaStore', {
                     listPlantillas = dataForEvento as IPlantilla[]
                     if (listPlantillas.length == 0) {
                         const responseForTipoEvento = await api.get(`/plantilla/tipo-evento/${idTipoEvento}`)
+
                         const { data: dataPlantillasForTipoEvento } = responseForTipoEvento
-                        // console.log({ dataPlantillasForTipoEvento })
 
                         const {
                             result: resultForTipoEvento,

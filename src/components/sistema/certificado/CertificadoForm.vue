@@ -163,15 +163,10 @@ export default {
 
     // Watcher para obtener plantillas cuando se selecciona un evento
     watch(() => certificado.value.id_evento, (newId, oldId) => {
-      // console.log('id_evento', certificado.value.id_evento)
-      // console.log('idTipoEvento', idTipoEvento.value)
-
       if (newId) {
         if (idTipoEvento.value === 0) {
-          // console.log('aaa')
           storePlantilla.getPlantillasByEvento(newId);
         } else {
-          // console.log('bbb')
           storePlantilla.getPlantillasByTipoEventoOrEvento(newId, idTipoEvento.value);
         }
 
@@ -263,7 +258,6 @@ export default {
     };
 
     const selectEvento = (evento) => {
-      // console.log('selectEvento', evento)
       certificado.value.id_evento = evento.id;
       certificado.value.nombre_evento = evento.titulo;
       idTipoEvento.value = evento.id_tipoevento

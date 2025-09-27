@@ -236,15 +236,12 @@ const requestToggleEstado = (id) => {
 
 const downloadCertificado = async (id_alumno, id_evento) => {
   await certificadoStore.fetchCertificadoByAlumnoByEvento(id_alumno, id_evento)
-  // console.log('certificadoStore.result', certificadoStore.result)
-  // console.log('certificadoStore.certificado', certificadoStore.certificado)
 
   if (certificadoStore.result && certificadoStore.certificado) {
     if (certificadoStore.certificado.file_name) {
       certificadoStore.certificado.filename = certificadoStore.certificado.file_name
     }
     const filename = certificadoStore.certificado.filename
-    // console.log({ filename })
     await certificadoStore.downloadCertificadoByName(filename)
     const classToast = certificadoStore.result ? 'success' : 'error';
     storeToast.addToast(certificadoStore.message, classToast);
@@ -253,24 +250,6 @@ const downloadCertificado = async (id_alumno, id_evento) => {
     storeToast.addToast(errorMessage, 'error');
   }
 }
-
-// const downloadCertificado = async (id) => {
-//   console.log('id certificado', id)
-
-//   await certificadoStore.fetchCertificadoById(id)
-
-//   if (certificadoStore.result && certificadoStore.certificado && certificadoStore.certificado.filename) {
-//     const filename = certificadoStore.certificado.filename;
-
-//     await certificadoStore.downloadCertificadoByName(filename);
-
-//     const classToast = certificadoStore.result ? 'success' : 'error';
-//     storeToast.addToast(certificadoStore.message, classToast);
-//   } else {
-//     const errorMessage = certificadoStore.message || 'Error al obtener los detalles del certificado.';
-//     storeToast.addToast(errorMessage, 'error');
-//   }
-// }
 
 const currentPage = computed(() => certificadoStore.pagination.currentPage);
 
@@ -303,25 +282,6 @@ const deleteCertificado = async () => {
   }
 };
 
-// const handleFileUpload = async (event, certificado) => {
-//   const file = event.target.files[0];
-//   if (!file) return;
-
-//   // Lógica para subir el archivo
-//   const formData = new FormData();
-//   formData.append('file', file);
-//   formData.append('id_alumno', certificado.id_alumno);
-//   formData.append('id_evento', certificado.id_evento);
-//   // formData.append('id_tipocertificado', certificado.id_tipocertificado); // Ojo: necesitas este campo en tus datos de la tabla
-
-//   dropdownVisibleId.value = null; // Cerrar el dropdown después de la selección
-
-//   await certificadoStore.uploadCertificado(formData);
-
-//   const classToast = certificadoStore.result ? 'success' : 'error';
-//   storeToast.addToast(certificadoStore.message, classToast);
-// };
-
 const uploadAndOpenCertificado = async () => {
   if (!uploadForm.value.file || !certificadoToUpload.value) {
     storeToast.addToast('Por favor, selecciona un archivo PDF.', 'error');
@@ -334,27 +294,13 @@ const uploadAndOpenCertificado = async () => {
   formData.append('id_evento', certificadoToUpload.value.id_evento);
   formData.append('codigo', uploadForm.value.codigo); // Añade el campo de código
 
-  // Ojo: Asegúrate de tener este campo en tus datos si es necesario
-  // formData.append('id_tipocertificado', certificadoToUpload.value.id_tipocertificado);
-
   await certificadoStore.uploadCertificado(formData);
 
   const classToast = certificadoStore.result ? 'success' : 'error';
   storeToast.addToast(certificadoStore.message, classToast);
 
-  // if (certificadoStore.result) {
-  //   // Si la subida fue exitosa, abre el PDF en una nueva ventana
-  //   openPdfInNewWindow(certificadoStore.message); // El mensaje ahora contendrá el nombre del archivo
-  // }
-
   closeUploadModal();
 };
-
-// const openPdfInNewWindow = (filename) => {
-//   // Asume que tu backend tiene un endpoint para servir los archivos
-//   const url = `${import.meta.env.VITE_API_URL}/certificados/view/${filename}`;
-//   window.open(url, '_blank');
-// };
 
 onMounted(() => {
   window.addEventListener('click', handleClickOutside);

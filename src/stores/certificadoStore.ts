@@ -139,12 +139,10 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 } = dataCertificadoUpload
 
                 if (resultUpload && dataUpload) {
-                    // console.log('aaa')
                     this.certificado = dataUpload as ICertificado
                     this.message = messageUpload || "Certificado subido obtenido correctamente"
                     this.result = true
                 } else {
-                    // console.log('bbb')
                     const response = await api.get('/certificado/busqueda', {
                         params: {
                             id_alumno,
@@ -162,19 +160,16 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     } = dataCertificado
 
                     if (result && data) {
-                        // console.log('ccc')
                         this.certificado = data as ICertificado
                         this.message = message || "Certificado obtenido correctamente"
                         this.result = true
                     } else {
-                        // console.log('ddd')
                         this.message = message || error || 'Error desconocido'
                         this.certificado = null
                         this.result = false
                     }
                 }
             } catch (error) {
-                // console.log('show error')
                 this.result = false
                 this.message = "Error al obtener el certificado subido"
                 this.error = error instanceof Error ? error.message : 'Error desconocido'
