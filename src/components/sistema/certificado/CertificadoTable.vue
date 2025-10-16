@@ -178,7 +178,7 @@ const certificadoStore = useCertificadoStore();
 const storeToast = useToastStore();
 
 const certificados = computed(() => certificadoStore.certificados);
-const message = computed(() => certificadoStore.message);
+// const message = computed(() => certificadoStore.message);
 
 const searchInput = ref('');
 const dropdownVisibleId = ref(null);
@@ -259,7 +259,7 @@ const toggleEstado = async () => {
     const nuevoEstado = !certificado.estado;
     await certificadoStore.updateEstado(certificadoToToggleEstado.value, nuevoEstado);
     const classToast = certificadoStore.result ? 'success' : 'error';
-    storeToast.addToast(message, classToast);
+    storeToast.addToast(certificadoStore.message, classToast);
     isEstadoConfirmVisible.value = false;
     certificadoToToggleEstado.value = null;
     fetchCertificados(currentPage.value, searchInput.value.trim()); // Refrescar la tabla con la página actual
@@ -275,7 +275,7 @@ const deleteCertificado = async () => {
   if (certificadoToDelete.value) {
     await certificadoStore.deleteCertificado(certificadoToDelete.value);
     const classToast = certificadoStore.result ? 'success' : 'error';
-    storeToast.addToast(message, classToast);
+    storeToast.addToast(certificadoStore.message, classToast);
     isConfirmVisible.value = false;
     certificadoToDelete.value = null;
     fetchCertificados(currentPage.value, searchInput.value.trim()); // Refrescar la tabla con la página actual

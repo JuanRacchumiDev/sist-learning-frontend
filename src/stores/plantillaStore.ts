@@ -53,39 +53,78 @@ export const usePlantillaStore = defineStore('plantillaStore', {
         },
         async getPlantillasByTipoEventoOrEvento(idEvento: number, idTipoEvento: number) {
             try {
+                // console.log('getPlantillasByTipoEventoOrEvento')
+                // console.log({ idEvento })
+                // console.log({ idTipoEvento })
+
                 let listPlantillas: IPlantilla[] = []
 
-                const responseForEvento = await api.get(`/plantilla/evento/${idEvento}`)
+                const responseForTipoEvento = await api.get(`/plantilla/tipo-evento/${idTipoEvento}`)
 
-                const { data: dataPlantillasForEvento } = responseForEvento
+                // console.log({ responseForTipoEvento })
+
+                const { data: dataPlantillasForTipoEvento } = responseForTipoEvento
 
                 const {
-                    result: resultForEvento,
-                    data: dataForEvento
-                } = dataPlantillasForEvento
+                    result: resultForTipoEvento,
+                    data: dataForTipoEvento
+                } = dataPlantillasForTipoEvento
 
-                if (resultForEvento) {
-                    listPlantillas = dataForEvento as IPlantilla[]
+                if (resultForTipoEvento) {
+                    listPlantillas = dataForTipoEvento as IPlantilla[]
+
                     if (listPlantillas.length == 0) {
-                        const responseForTipoEvento = await api.get(`/plantilla/tipo-evento/${idTipoEvento}`)
+                        const responseForEvento = await api.get(`/plantilla/evento/${idEvento}`)
 
-                        const { data: dataPlantillasForTipoEvento } = responseForTipoEvento
+                        const { data: dataPlantillasForEvento } = responseForEvento
 
                         const {
-                            result: resultForTipoEvento,
-                            data: dataForTipoEvento
-                        } = dataPlantillasForTipoEvento
+                            result: resultForEvento,
+                            data: dataForEvento
+                        } = dataPlantillasForEvento
 
-                        if (resultForTipoEvento) {
-                            listPlantillas = dataForTipoEvento as IPlantilla[]
-                            this.result = resultForTipoEvento
+                        if (resultForEvento) {
+                            listPlantillas = dataForEvento as IPlantilla[]
+                            this.result = resultForEvento
                             this.plantillas = listPlantillas
                         }
                     } else {
-                        this.result = resultForEvento
+                        this.result = resultForTipoEvento
                         this.plantillas = listPlantillas
                     }
                 }
+
+                // const responseForEvento = await api.get(`/plantilla/evento/${idEvento}`)
+
+                // const { data: dataPlantillasForEvento } = responseForEvento
+
+                // const {
+                //     result: resultForEvento,
+                //     data: dataForEvento
+                // } = dataPlantillasForEvento
+
+                // if (resultForEvento) {
+                //     listPlantillas = dataForEvento as IPlantilla[]
+                //     if (listPlantillas.length == 0) {
+                //         const responseForTipoEvento = await api.get(`/plantilla/tipo-evento/${idTipoEvento}`)
+
+                //         const { data: dataPlantillasForTipoEvento } = responseForTipoEvento
+
+                //         const {
+                //             result: resultForTipoEvento,
+                //             data: dataForTipoEvento
+                //         } = dataPlantillasForTipoEvento
+
+                //         if (resultForTipoEvento) {
+                //             listPlantillas = dataForTipoEvento as IPlantilla[]
+                //             this.result = resultForTipoEvento
+                //             this.plantillas = listPlantillas
+                //         }
+                //     } else {
+                //         this.result = resultForEvento
+                //         this.plantillas = listPlantillas
+                //     }
+                // }
             } catch (error) {
                 this.result = false
                 console.error('Error fetching plantillas: ', error)

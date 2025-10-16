@@ -444,12 +444,20 @@ export const useCertificadoStore = defineStore('certificadoStore', {
 
                 const { data } = response
 
+                // console.log({ data })
+
                 const { result, message, error } = data
+
+                // console.log({ result })
+
+                // console.log({ message })
+
+                // console.log({ error })
 
                 if (result) {
                     this.result = result
 
-                    this.message = message
+                    this.message = message || "Certificado eliminado correctamente"
 
                     this.fetchCertificados({
                         page: this.pagination.currentPage,

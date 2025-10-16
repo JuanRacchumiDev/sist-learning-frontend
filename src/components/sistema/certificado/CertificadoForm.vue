@@ -54,7 +54,7 @@
               <ul>
                 <li v-for="evento in filteredEventos" :key="evento.id" @click="selectEvento(evento)"
                   class="p-2 hover:bg-gray-200 cursor-pointer">
-                  {{ evento.titulo }}
+                  {{ evento.titulo }} ({{ evento.tipoEvento.nombre }})
                 </li>
               </ul>
             </div>
@@ -164,11 +164,12 @@ export default {
     // Watcher para obtener plantillas cuando se selecciona un evento
     watch(() => certificado.value.id_evento, (newId, oldId) => {
       if (newId) {
-        if (idTipoEvento.value === 0) {
-          storePlantilla.getPlantillasByEvento(newId);
-        } else {
-          storePlantilla.getPlantillasByTipoEventoOrEvento(newId, idTipoEvento.value);
-        }
+        storePlantilla.getPlantillasByTipoEventoOrEvento(newId, idTipoEvento.value)
+        // if (idTipoEvento.value === 0) {
+        //   storePlantilla.getPlantillasByEvento(newId);
+        // } else {
+        //   storePlantilla.getPlantillasByTipoEventoOrEvento(newId, idTipoEvento.value);
+        // }
 
         showTemplateDropdown.value = true;
       } else {
@@ -258,6 +259,7 @@ export default {
     };
 
     const selectEvento = (evento) => {
+      // console.log({ evento })
       certificado.value.id_evento = evento.id;
       certificado.value.nombre_evento = evento.titulo;
       idTipoEvento.value = evento.id_tipoevento
