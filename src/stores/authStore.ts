@@ -13,9 +13,9 @@ export const useAuthStore = defineStore({
             id_trabajador: null,
             id_perfil: null,
             username: '',
-            usuario: '',
             slug_perfil: '',
-            nombre_perfil: ''
+            nombre_perfil: '',
+            nombre_persona: '',
         },
         returnUrl: null as string | null,
         error: null as string | null,
@@ -34,51 +34,65 @@ export const useAuthStore = defineStore({
                 }
 
                 const response = await api.post('/auth/login', authItem)
-
+                console.log({ response })
                 const { data } = response
 
-                const { result, message, token, usuario } = data
+                const { result, message, token, usuario: dataUsuario } = data
 
-                if (result) {
+                console.log({ result })
+
+                console.log({ message })
+
+                console.log({ token })
+
+                console.log({ dataUsuario })
+
+                if (result && dataUsuario) {
+                    // const {
+                    //     usuario: { id, id_perfil, username },
+                    //     alumno: { id: idAlumno, nombre_capitalized },
+                    //     perfil: { nombre, nombre_url },
+                    //     // trabajador: { id: idTrabajador },
+                    //     // instructor: { id: idInstructor }
+                    // } = dataUsuario
+
+                    const { usuario, perfil, alumno } = dataUsuario
 
                     this.result = result
+                    // this.usuario.id = id
+                    this.usuario.id = usuario?.id || null
+                    // this.usuario.id_perfil = id_perfil
+                    this.usuario.id_perfil = usuario?.id_perfil || null
+                    // this.usuario.username = username
+                    this.usuario.username = usuario?.username || ''
 
-                    const {
-                        id,
-                        id_alumno,
-                        id_instructor,
-                        id_perfil,
-                        id_trabajador,
-                        nombre_perfil,
-                        slug_perfil,
-                        username
-                    } = usuario
+                    this.usuario.nombre_perfil = perfil?.nombre || ''
+                    this.usuario.slug_perfil = perfil?.nombre_url || ''
 
-                    this.usuario.id = id
-                    this.usuario.id_alumno = id_alumno
-                    this.usuario.id_instructor = id_instructor
-                    this.usuario.id_trabajador = id_trabajador
-                    this.usuario.id_perfil = id_perfil
-                    this.usuario.nombre_perfil = nombre_perfil
-                    this.usuario.slug_perfil = slug_perfil
-                    this.usuario.username = username
+                    if (alumno) {
+                        this.usuario.id_alumno = alumno.id
+                        this.usuario.nombre_persona = alumno.nombre_capitalized
+                    }
+
+                    console.log('---- this.usuario ----')
+                    console.log(this.usuario)
+
+                    this.message = message
 
                     const dataLogin = {
                         token,
                         usuario: this.usuario
                     }
 
-                    const urlRedireccion = (slug_perfil === 'estudiante' || slug_perfil === 'instructor')
+                    const urlRedireccion = (perfil.nombre_url === 'estudiante' || perfil.nombre_url === 'instructor')
                         ? '/certificado'
                         : '/evento'
 
-                    this.message = message
                     localStorage.setItem('auth', JSON.stringify(dataLogin))
                     router.push(this.returnUrl || urlRedireccion)
                 } else {
                     this.message = message || data.error || 'Error desconocido'
                 }
-
             } catch (error) {
                 this.message = 'Error de autenticación'
                 this.result = false
@@ -94,9 +108,9 @@ export const useAuthStore = defineStore({
                 id_trabajador: null,
                 id_perfil: null,
                 username: '',
-                usuario: '',
                 slug_perfil: '',
-                nombre_perfil: ''
+                nombre_perfil: '',
+                nombre_persona: ''
             }
             this.message = '¡Cierre de sesión exitosa'
             this.result = true

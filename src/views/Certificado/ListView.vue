@@ -17,19 +17,19 @@ import BreadcrumbDefault from "@/components/Breadcrumbs/BreadcrumbDefault.vue"
 import Pagination from "@/components/Common/Pagination.vue"
 import { useCertificadoStore } from "@/stores"
 
-const certificadorStore = useCertificadoStore()
+const certificadoStore = useCertificadoStore()
 
 const pageTitle = ref("Listado")
 const urlCurrentName = ref("Certificado")
 
-const pagination = computed(() => certificadorStore.pagination)
+const pagination = computed(() => certificadoStore.pagination)
 
 const handlePageChange = (page) => {
-    certificadorStore.fetchCertificados({ page: page })
+    certificadoStore.fetchCertificados({ page: page })
 }
 
 onMounted(() => {
-    certificadorStore.currentQuery = ""
-    certificadorStore.fetchCertificados({})
+    certificadoStore.currentQuery = ""
+    certificadoStore.fetchCertificados({ page: 1 })
 })
 </script>

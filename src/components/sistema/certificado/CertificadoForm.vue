@@ -1,75 +1,74 @@
 <template>
-  <div class="px-6 py-8">
+  <div class="px-6 py-4">
     <form @submit.prevent="submitForm">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="space-y-4">
-          <!-- Buscar alumno -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Buscar alumno: <span
-                class="text-red-500">*</span></label>
-            <input type="text" v-model="searchQueryAlumno" @keyup.enter="filterAlumnos" placeholder="Ej. Juan Pérez"
-              class="mt-1 p-2 border border-gray-300 rounded w-full" />
-            <div v-if="filteredAlumnos.length > 0"
-              class="mt-2 bg-white border border-gray-300 rounded max-h-60 overflow-y-auto">
-              <ul>
-                <li v-for="alumno in filteredAlumnos" :key="alumno.id" @click="selectAlumno(alumno)"
-                  class="p-2 hover:bg-gray-200 cursor-pointer">
-                  {{ alumno.nombres }} {{ alumno.apellido_paterno }} {{ alumno.apellido_materno }}
-                </li>
-              </ul>
-            </div>
-            <div v-if="errors.id_alumno" class="text-red-600 text-sm mt-1">{{ errors.id_alumno }}</div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="mb-1">
+          <label class="block text-sm font-medium text-gray-700">Buscar alumno: <span
+              class="text-red-500">*</span></label>
+          <input type="text" v-model="searchQueryAlumno" @keyup.enter="filterAlumnos" placeholder="Juan Pérez"
+            autocomplete="off" class="mt-1 p-2 border border-gray-300 rounded w-full" />
+          <div v-if="filteredAlumnos.length > 0"
+            class="mt-2 bg-white border border-gray-300 rounded max-h-60 overflow-y-auto">
+            <ul>
+              <li v-for="alumno in filteredAlumnos" :key="alumno.id" @click="selectAlumno(alumno)"
+                class="p-2 hover:bg-gray-200 cursor-pointer">
+                {{ alumno.nombres }} {{ alumno.apellido_paterno }} {{ alumno.apellido_materno }}
+              </li>
+            </ul>
           </div>
-          <!-- -->
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Nombre (para impresión): <span
-                class="text-red-500">*</span></label>
-            <input v-model="certificado.nombre_impresion" type="text" placeholder="Ej. Juan Pérez Rodríguez"
-              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-              maxlength="100" />
-            <div v-if="errors.nombre_impresion" class="text-red-600 text-sm mt-1">{{
-              errors.nombre_impresion }}</div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Fecha de emisión: <span
-                class="text-red-500">*</span></label>
-            <input v-model="certificado.fecha_envio" type="date"
-              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
-            <div v-if="errors.fecha_envio" class="text-red-600 text-sm mt-1">{{ errors.fecha_envio }}</div>
-          </div>
+          <div v-if="errors.id_alumno" class="text-red-600 text-sm mt-1">{{ errors.id_alumno }}</div>
         </div>
-
-        <!-- Columna derecha: información adicional -->
-        <div class="space-y-4">
-          <!-- Buscar evento -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Buscar evento: <span
-                class="text-red-500">*</span></label>
-            <input type="text" v-model="searchQueryEvento" @keyup.enter="filterEventos"
-              placeholder="Ej. Crianza de cuyes" class="mt-1 p-2 border border-gray-300 rounded w-full" />
-            <div v-if="filteredEventos.length > 0"
-              class="mt-2 bg-white border border-gray-300 rounded max-h-60 overflow-y-auto">
-              <ul>
-                <li v-for="evento in filteredEventos" :key="evento.id" @click="selectEvento(evento)"
-                  class="p-2 hover:bg-gray-200 cursor-pointer">
-                  {{ evento.titulo }} ({{ evento.tipoEvento.nombre }})
-                </li>
-              </ul>
-            </div>
-            <div v-if="errors.id_evento" class="text-red-600 text-sm mt-1">{{ errors.id_evento }}</div>
+        <div class="mb-1">
+          <label class="block text-sm font-medium text-gray-700">Nombre (para impresión): <span
+              class="text-red-500">*</span></label>
+          <input v-model="certificado.nombre_impresion" type="text" placeholder="Ej. Juan Pérez Rodríguez"
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+            maxlength="100" />
+          <div v-if="errors.nombre_impresion" class="text-red-600 text-sm mt-1">{{
+            errors.nombre_impresion }}</div>
+        </div>
+        <div class="mb-1">
+          <label class="block text-sm font-medium text-gray-700">Buscar evento: <span
+              class="text-red-500">*</span></label>
+          <input type="text" v-model="searchQueryEvento" @keyup.enter="filterEventos" placeholder="Ej. Crianza de cuyes"
+            class="mt-1 p-2 border border-gray-300 rounded w-full" />
+          <div v-if="filteredEventos.length > 0"
+            class="mt-2 bg-white border border-gray-300 rounded max-h-60 overflow-y-auto">
+            <ul>
+              <li v-for="evento in filteredEventos" :key="evento.id" @click="selectEvento(evento)"
+                class="p-2 hover:bg-gray-200 cursor-pointer">
+                {{ evento.titulo }} ({{ evento.tipoEvento.nombre }})
+              </li>
+            </ul>
           </div>
-          <!---->
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Evento seleccionado: <span
-                class="text-red-500">*</span></label>
-            <input v-model="certificado.nombre_evento" type="text" placeholder="Ej. Crianza de cuyes"
-              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-              maxlength="100" disabled />
-          </div>
-
+          <div v-if="errors.id_evento" class="text-red-600 text-sm mt-1">{{ errors.id_evento }}</div>
+        </div>
+        <div class="mb-1">
+          <label class="block text-sm font-medium text-gray-700">Evento seleccionado: <span
+              class="text-red-500">*</span></label>
+          <input v-model="certificado.nombre_evento" type="text" placeholder="Ej. Crianza de cuyes"
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+            maxlength="100" disabled />
+        </div>
+        <div class="mb-1">
+          <label class="block text-sm font-medium text-gray-700">Fecha de emisión: <span
+              class="text-red-500">*</span></label>
+          <input v-model="certificado.fecha_envio" type="date"
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
+          <div v-if="errors.fecha_envio" class="text-red-600 text-sm mt-1">{{ errors.fecha_envio }}</div>
+        </div>
+        <!--
+        <div class="mb-1">
+          <label for="id_ciudad" class="block text-sm font-medium text-gray-700">Ciudad:</label>
+          <select name="id_ciudad" id="id_ciudad" v-model="certificado.id_ciudad"
+            class="mt-1 p-2 border border-gray-300 rounded w-full">
+            <option value="">- SELECCIONE -</option>
+            <option value="1">MOQUEGUA</option>
+            <option value="2">TACNA</option>
+          </select>
+        </div>
+        -->
+        <div class="mb-1">
           <div v-if="certificado.id_evento && plantillas.length > 0">
             <label class="block text-sm font-medium text-gray-700">Seleccionar plantilla: <span
                 class="text-red-500">*</span></label>
@@ -82,22 +81,20 @@
             <div v-if="errors.id_plantilla" class="text-red-600 text-sm mt-1">{{ errors.id_plantilla }}</div>
           </div>
         </div>
-      </div>
 
-      <!-- Botones -->
-      <div class="flex justify-between mt-8">
+      </div>
+      <div class="flex justify-between mt-2">
         <button type="submit"
           class="flex items-center px-4 py-2 bg-greenwhite-600 text-white rounded-md hover:bg-greenwhite-700 disabled:bg-greenwhite-300 disabled:cursor-not-allowed"
-          :disabled="loading">
+          :class="{ 'opacity-50 cursor-not-allowed': isDuplicated }" :disabled="isDuplicated || loading">
           <svg v-if="loading" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 animate-spin" fill="none"
             viewBox="0 0 24 24" stroke="currentColor">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" />
           </svg>
           {{ loading ? 'Guardando...' : (certificado.id ? 'Actualizar' : 'Registrar') }}
         </button>
-
         <button type="button"
-          class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4"
+          class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4 disabled:bg-blue-300 disabled:cursor-not-allowed"
           :disabled="loading" @click="cancelar">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
@@ -126,6 +123,7 @@ export default {
   setup() {
     const certificado = ref({
       id: null,
+      id_ciudad: '',
       id_alumno: '',
       id_evento: '',
       id_plantilla: '',
@@ -163,6 +161,12 @@ export default {
 
     // Watcher para obtener plantillas cuando se selecciona un evento
     watch(() => certificado.value.id_evento, (newId, oldId) => {
+      console.log('---- newId ----')
+      console.log({ newId })
+
+      console.log('---- idTipoEvento.value ----')
+      console.log(idTipoEvento.value)
+
       if (newId) {
         storePlantilla.getPlantillasByTipoEventoOrEvento(newId, idTipoEvento.value)
         // if (idTipoEvento.value === 0) {

@@ -29,6 +29,9 @@ export const useCertificadoStore = defineStore('certificadoStore', {
             this.loading = true
             this.error = null
 
+            const authData = JSON.parse(localStorage.getItem('auth') || '{}')
+            const idAlumno = authData.usuario?.id_alumno
+
             const finalQuery = (query !== undefined && query.length > 0) ? query : this.currentQuery
 
             if (query !== undefined) {
@@ -40,13 +43,16 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     params: {
                         page,
                         limit,
-                        busqueda: finalQuery
+                        busqueda: finalQuery,
+                        id_alumno: idAlumno
                     }
                 })
 
-                const { data } = response
+                // const { data } = response
 
-                const { result, data: certificadosData, pagination, message } = data
+                // const { result, data: certificadosData, pagination, message } = data
+
+                const { data: { result, data: certificadosData, pagination, message } } = response
 
                 if (result) {
                     this.certificados = certificadosData
@@ -306,23 +312,31 @@ export const useCertificadoStore = defineStore('certificadoStore', {
             this.loading = true;
             this.message = '';
             this.result = false;
+
             try {
+                console.log('---- payload certificado ----')
+                console.log({ certificado })
+
                 const { id_alumno } = certificado
 
-                const response = await api.post(`/certificado`, certificado, {
+                const responseCertificado = await api.post(`/certificado`, certificado, {
                     responseType: 'blob'
                 })
 
-                const { status, data } = response
+                console.log({ responseCertificado })
+
+                const { status, data } = responseCertificado
 
                 if (status === 200) {
                     // Crear una URL temporal para el blob y forzar la descarga
                     const url = window.URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
 
                     // Obtener alumno
-                    const response = await api.get(`/alumno/${id_alumno}`)
+                    const responseAlumno = await api.get(`/alumno/${id_alumno}`)
 
-                    const { data: dataAlumno } = response
+                    console.log({ responseAlumno })
+
+                    const { data: dataAlumno } = responseAlumno
 
                     const { data: { nombre_capitalized } } = dataAlumno;
 

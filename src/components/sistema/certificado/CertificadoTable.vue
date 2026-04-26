@@ -4,6 +4,10 @@
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
       <input v-model="searchInput" @keyup.enter="applySearch" type="text" placeholder="Criterio de búsqueda"
         class="w-full sm:w-1/3 px-4 py-2 text-sm border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
+      <span class="text-[10px] text-gray-400 mt-1 block">
+        Mostrando {{ certificados.length }} resultados
+      </span>
+
       <router-link to="/certificado/nuevo"
         class="inline-flex items-center gap-2 self-end md:self-auto rounded bg-greenwhite-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-greenwhite-700">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
@@ -96,15 +100,6 @@
                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
                 Editar
               </router-link>
-
-              <!--
-              <label for="file-upload"
-                class="w-full block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer">
-                Subir Certificado
-              </label>
-              <input type="file" id="file-upload" class="hidden" @change="handleFileUpload($event, certificado)" />
-            -->
-
               <button @click="openUploadModal(certificado)"
                 class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer">
                 Subir Certificado
@@ -171,7 +166,6 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useCertificadoStore, useToastStore } from '@/stores';
 import ConfirmDialog from "@/components/Common/ConfirmDialog.vue";
-import { DownloadIcon, UploadIcon } from "@heroicons/vue/outline"
 import { formatDate } from '@/utils/date.utils'
 
 const certificadoStore = useCertificadoStore();

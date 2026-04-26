@@ -2,7 +2,7 @@
     <DefaultLayout>
         <BreadcrumbDefault :pageTitle="pageTitle" :urlCurrentName="urlCurrentName" :options="options" />
         <div class="flex justify-center items-center">
-            <div class="w-full max-w-3xl">
+            <div class="w-full">
                 <DefaultCard :cardTitle="cardTitle">
                     <CertificadoForm />
                 </DefaultCard>

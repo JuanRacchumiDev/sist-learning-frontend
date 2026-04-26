@@ -9,9 +9,21 @@ export const formatDate = (dateParam: string): string => {
 }
 
 export const currentDate = (): string => {
-    const today = new Date().toISOString().split('T')[0];
+    const date = new Date();
 
-    return `${today}`
+    // Usamos Intl para formatear la fecha específicamente para la zona horaria de Perú
+    const options: Intl.DateTimeFormatOptions = {
+        timeZone: 'America/Lima',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    };
+
+    const formatter = new Intl.DateTimeFormat('en-CA', options); // en-CA retorna YYYY-MM-DD
+    return formatter.format(date);
+
+    // const today = new Date().toISOString().split('T')[0];
+    // return `${today}`
 }
 
 export const formatDateForInput = (dateString: string): string => {
